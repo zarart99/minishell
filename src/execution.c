@@ -1,7 +1,7 @@
 #include "../include/minishell.h"
 
 // Function to execute a single command with redirection and pipe handling
-void execute_command(t_command *cmd, char **envp, int pipefd[2])
+void execute_command(t_command *cmd, int pipefd[2])
 {
     if (cmd->here_doc) {
         // Handle here_doc redirection
@@ -22,12 +22,12 @@ void execute_command(t_command *cmd, char **envp, int pipefd[2])
     }
     
     // Execute the command normally
-    char *cmd_path = find_command(cmd->args[0], envp);
+    char *cmd_path = find_command(cmd->args[0], cmd->envp);
     if (!cmd_path) {
         ft_putstr_fd("Command not found\n", 2);
         exit(127);
     }
-    execve(cmd_path, cmd->args, envp);
+    execve(cmd_path, cmd->args, cmd->envp);
     perror("execve");
     free(cmd_path);
     exit(EXIT_FAILURE);
@@ -35,7 +35,7 @@ void execute_command(t_command *cmd, char **envp, int pipefd[2])
 
 
 // Main function to handle pipeline execution with pipes and redirections
-void execute_pipeline(t_command *commands, char **envp)
+void execute_pipeline(t_command *commands)
 {
     int pipefd[2];
     int prev_pipe = -1;
@@ -74,7 +74,7 @@ void execute_pipeline(t_command *commands, char **envp)
                 close(pipefd[0]);  // Закрываем дескриптор чтения, если пайп был создан
             }
 
-            execute_command(commands, envp, pipefd);  // Выполняем команду
+            execute_command(commands, pipefd);  // Выполняем команду
         }
         else  // Родительский процесс
         {

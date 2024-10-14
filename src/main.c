@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/10/13 23:47:58 by artemii          ###   ########.fr       */
+/*   Updated: 2024/10/15 01:44:09 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,28 @@
 
 extern char	**environ;
 
-// static void cleanup(t_command **commands, char *input)
-//{
-//    // Освобождаем массив структур команд
-//    free_parsed_commands(commands);
+void	print_command(t_command *command) //Просто для дебага
+{
+	int	j;
 
-//    // Освобождаем введённую строку
-//    free(input);
-//}
+	ft_printf("Commands:\n");
+	j = 0;
+	while (command->args[j] != NULL) 
+	{
+		ft_printf("  Args[%d]: %s \n", j, command->args[j]);
+		j++;
+	}
+	if (command->input_file)
+		ft_printf("  Input file: %s\n", command->input_file);
+	if (command->output_file)
+		ft_printf("  Output file: %s\n", command->output_file);
+	if (command->append)
+		ft_printf("  Append mode: enabled\n");
+	if (command->here_doc)
+		ft_printf("  Here_doc: %s\n", command->here_doc);
+	if (command->is_pipe)
+		ft_printf("  Is pipe: enabled\n");
+}
 
 void	free_commands(t_command *cmd)
 {
@@ -59,10 +73,11 @@ int	main(void)
 		if (ft_strlen(user_input) > 0)
 			add_history(user_input);
 		// Парсим введённую строку и получаем структуру команды
-		commands = parse_pipeline(user_input);
+		commands = parse_pipeline(user_input, envp);
 		if (commands)
 		{
-			execute_pipeline(commands, envp);
+			print_command(commands); // для дебага
+			execute_pipeline(commands);
 			free_commands(commands);
 			// Функция для освобождения структуры команды
 			free(user_input);
