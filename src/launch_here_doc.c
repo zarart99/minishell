@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/04 21:17:06 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/10 00:37:57 by artemii          ###   ########.fr       */
+/*   Updated: 2024/10/18 00:28:10 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	launch_here_doc(char **argv, int pipefd[2])
 
 	line = NULL;
 	close(pipefd[0]);
-	printf("in launch_here_doc\n"); //Supprimer
+	ft_printf("in launch_here_doc\n"); //Supprimer
 	while ((line = get_next_line(0)) != NULL)
 	{
 		if ((ft_strncmp(argv[2], line, ft_strlen(line) - 1)) == 0)
