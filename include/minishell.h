@@ -12,17 +12,18 @@
 
 typedef struct s_command
 {
-	char	**envp;
-	char **args;       // Массив аргументов команды
-	char *input_file;  // Файл для оператора <
-	char *output_file; // Файл для операторов > и >>
-	int append;        // Флаг для оператора >>
-	char *here_doc;    // Флаг для оператора <<
-	int is_pipe;       // Флаг для пайпа
-	int		prev_pipe;
+	char **envp; // Переменные окружения
+	char	***cmd;
+	// Массив массивов команд (каждая команда — это массив аргументов)
+	char *input_file;  // Файл для входного редиректа (<)
+	char *output_file; // Файл для выходного редиректа (>)
+	int append;        // Флаг для редиректа с добавлением (>>)
+	int here_doc;      // Флаг для here_doc (<<)
+	int is_pipe;       // Флаг пайпа
+	int prev_pipe;     // Для отслеживания пайпов
 }			t_command;
 
-t_command	*parse_pipeline(char *input, char **envp);
+void		parse_pipeline(t_command *command, char *input);
 // void	execute_pipeline(char ***commands, char **envp);
 void		free_parsed_commands(t_command **commands);
 char		*find_command(char *cmd, char **envp);
@@ -34,6 +35,6 @@ void		ft_redirection_out_append(char *output_file);
 void		ft_redirection_out(char *output_file);
 void		execute_pipeline(t_command *commands);
 char		**ft_split_quotes(const char *input);
-void		free_commands(t_command *cmd);
+void		free_structure(t_command *command);
 
 #endif
