@@ -13,87 +13,107 @@ void	free_split(char **args)
 	free(args);
 }
 
-// Обработка редиректов и пайпов
-void handle_redirections_and_pipes(t_command *command, char **tokens, int *i, int *arg_in_cmd, char **args)
+// Обработка редиректов. Тут наполняем структуру и проставляем позиции для редиректов.
+void	handle_redirection(t_cmd *cmd, char **tokens, int *i,
+		int *redir_position)
 {
-    if (ft_strcmp(tokens[*i], "<") == 0)  // Входной редирект
-    {
-        *i += 1;
-        command->input_file = ft_strdup(tokens[*i]);
-    }
-    else if (ft_strcmp(tokens[*i], ">") == 0)  // Выходной редирект
-    {
-        *i += 1;
-        command->output_file = ft_strdup(tokens[*i]);
-    }
-    else if (ft_strcmp(tokens[*i], ">>") == 0)  // Выходной редирект с добавлением в файл
-    {
-        *i += 1;
-        command->output_file = ft_strdup(tokens[*i]);
-        command->append = 1;
-    }
-    else if (ft_strcmp(tokens[*i], "<<") == 0)  // Here-doc
-    {
-        args[(*arg_in_cmd)++] = ft_strdup("<<"); // Кладём в первый аргумент команды
-        *i += 1;
-        args[(*arg_in_cmd)++]= ft_strdup(tokens[*i]);  // Лимитер кладём во второй аргумент
-    }
+	if (ft_strcmp(tokens[*i], "<") == 0) // Входной редирект
+	{
+		*i += 1;
+		cmd->input_file = ft_strdup(tokens[*i]);
+		cmd->pos_input = (*redir_position)++;
+		// Устанавливаем позицию и увеличиваем счётчик
+	}
+	else if (ft_strcmp(tokens[*i], ">") == 0)
+	{
+		*i += 1;
+		cmd->output_file = ft_strdup(tokens[*i]);
+		cmd->pos_output = (*redir_position)++;
+	}
+	else if (ft_strcmp(tokens[*i], ">>") == 0)
+	{
+		*i += 1;
+		cmd->append_file = ft_strdup(tokens[*i]);
+		cmd->pos_append = (*redir_position)++;
+	}
+	else if (ft_strcmp(tokens[*i], "<<") == 0)
+	{
+		*i += 1;
+		cmd->here_doc_file = ft_strdup(tokens[*i]);
+		cmd->pos_here_doc = (*redir_position)++;
+	}
 }
 
-
-void parse_input(t_command *command, char *input, int cmd_idx)
+// Обработка аргументов команды
+void	handle_command_args(t_cmd *cmd, char **tokens, int *i)
 {
-    int i = 0;
-    int arg_in_cmd = 0;
-    char *full_command = NULL;  // Переменная для объединения аргументов
-    char **args = malloc(sizeof(char *) * 100);  // Допустим максимум 100 аргументов
+	char	*tmp;
 
-    if (!args)
-        return;
-    char **tokens = ft_split_quotes(input);
-
-    while (tokens[i] != NULL)
-    {
-        if (ft_strcmp(tokens[i], "<") == 0 || ft_strcmp(tokens[i], ">") == 0 || 
-            ft_strcmp(tokens[i], ">>") == 0 || ft_strcmp(tokens[i], "<<") == 0)
-            handle_redirections_and_pipes(command, tokens, &i, &arg_in_cmd, args);  
-        else 
-        {
-            if (full_command == NULL)
-                full_command = ft_strdup(tokens[i]);  // Если это первый аргумент, просто копируем его
-            else
-            {
-                full_command = ft_strjoin(full_command, " ");  // Добавляем пробел
-                full_command = ft_strjoin(full_command, tokens[i]);  // Добавляем следующий аргумент
-            }
-        }
-        i++;
-    }
-    if (full_command != NULL)
-        args[arg_in_cmd++] = full_command; //Кладём команду в элемент массива команды
-    args[arg_in_cmd] = NULL;
-    command->cmd[cmd_idx] = args;
-    free_split(tokens);  // Освобождаем временный массив токенов
+	if (cmd->cmd == NULL)
+		cmd->cmd = ft_strdup(tokens[*i]); // Кладём команду
+	else
+	{
+		if (cmd->cmd_arg == NULL)
+			cmd->cmd_arg = ft_strdup(tokens[*i]); // Первый аргумент
+		else
+		{
+			tmp = ft_strjoin(cmd->cmd_arg, " ");
+			cmd->cmd_arg = ft_strjoin(tmp, tokens[*i]); // Соединяем аргументы
+			free(tmp);
+		}
+	}
 }
 
-void parse_pipeline(t_command *command, char *input)
+void	parse_single_command(t_cmd *cmd, char *input)
 {
-    char **command_tokens;
-    int cmd_count = 0;
-    int i = 0;
+	int		i;
+	char	**tokens;
+	int		redir_position;
 
-    // Разбиваем строку на команды по пайпам
-    command_tokens = ft_split(input, '|');  // Команды между пайпами
-    while (command_tokens[cmd_count] != NULL)
-        cmd_count++;
-    command->cmd = malloc(sizeof(char **) * (cmd_count + 1));
+	i = 0;
+	redir_position = 1; // Счётчик для позиций редиректов
+	tokens = ft_split_quotes(input);
+	while (tokens[i] != NULL)
+	{
+		// Обрабатываем редиректы
+		if (ft_strcmp(tokens[i], "<") == 0 || ft_strcmp(tokens[i], ">") == 0
+			|| ft_strcmp(tokens[i], ">>") == 0 || ft_strcmp(tokens[i],
+				"<<") == 0)
+			handle_redirection(cmd, tokens, &i, &redir_position);
+		else
+			handle_command_args(cmd, tokens, &i);
+		i++;
+	}
+	free_split(tokens); // Освобождаем временный массив токенов
+}
 
-    // Для каждой команды вызываем parse_input и кладём в массив команд
-    while (command_tokens[i] != NULL)
-    {
-        parse_input(command, command_tokens[i], i);  // Передаем индекс команды `i`
-        i++;
-    }
-    command->cmd[i] = NULL;  // Завершаем массив массивов
-    free_split(command_tokens);  // Освобождаем временный массив токенов
+void	parse_pipeline(t_data *data, char *input)
+{
+	char	**command_tokens;
+	int		cmd_count;
+	int		i;
+
+	cmd_count = 0;
+	i = 0;
+	// Разбиваем строку на команды по пайпам
+	command_tokens = ft_split(input, '|');
+	while (command_tokens[cmd_count] != NULL)
+		cmd_count++;
+	data->cmd = malloc(sizeof(t_cmd *) * (cmd_count + 1));
+	data->nb_pipe = cmd_count - 1; // Количество пайпов = команд - 1
+	// Для каждой команды вызываем парсер
+	while (i < cmd_count)
+	{
+		data->cmd[i] = malloc(sizeof(t_cmd));
+		if (!data->cmd[i])
+		{
+			perror("malloc failed");
+			return ;
+		}
+		ft_memset(data->cmd[i], 0, sizeof(t_cmd)); // Инициализируем структуру
+		parse_single_command(data->cmd[i], command_tokens[i]);
+		i++;
+	}
+	data->cmd[cmd_count] = NULL; // Завершаем массив структур
+	free_split(command_tokens);  // Освобождаем временный массив токенов
 }

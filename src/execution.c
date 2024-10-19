@@ -1,6 +1,6 @@
 #include "../include/minishell.h"
 
-// Function to execute a single command with redirection and pipe handling
+/*// Function to execute a single command with redirection and pipe handling
 void execute_command(t_command *cmd, int pipefd[2])
 {
     if (cmd->here_doc) {
@@ -93,7 +93,7 @@ void execute_pipeline(t_command *commands)
     // Ожидание завершения всех дочерних процессов
     while (wait(NULL) > 0);
 }
-
+*/
 /*
 pid_t	create_fork(void)
 {
