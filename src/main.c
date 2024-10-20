@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/10/15 01:44:09 by artemii          ###   ########.fr       */
+/*   Updated: 2024/10/19 23:54:42 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,57 +14,71 @@
 
 extern char	**environ;
 
-void	print_command(t_command *command) //Просто для дебага
+void print_commands(t_data *data)
 {
-	int	j;
+    int i = 0;
 
-	ft_printf("Commands:\n");
-	j = 0;
-	while (command->args[j] != NULL) 
-	{
-		ft_printf("  Args[%d]: %s \n", j, command->args[j]);
-		j++;
-	}
-	if (command->input_file)
-		ft_printf("  Input file: %s\n", command->input_file);
-	if (command->output_file)
-		ft_printf("  Output file: %s\n", command->output_file);
-	if (command->append)
-		ft_printf("  Append mode: enabled\n");
-	if (command->here_doc)
-		ft_printf("  Here_doc: %s\n", command->here_doc);
-	if (command->is_pipe)
-		ft_printf("  Is pipe: enabled\n");
+    while (data->cmd[i] != NULL)
+    {
+        ft_printf("Command[%d]:\n", i);
+        ft_printf("  cmd: %s\n", data->cmd[i]->cmd ? data->cmd[i]->cmd : "(null)"); // Проверка cmd на NULL
+        ft_printf("  cmd_arg: %s\n", data->cmd[i]->cmd_arg ? data->cmd[i]->cmd_arg : "(null)"); // Проверка cmd_arg на NULL
+        if (data->cmd[i]->input_file)
+            ft_printf("  input_file: %s (pos_input: %d)\n", data->cmd[i]->input_file, data->cmd[i]->pos_input);
+        else
+            ft_printf("  input_file: (null)\n");
+
+        if (data->cmd[i]->here_doc_file)
+            ft_printf("  here_doc_file: %s (pos_here_doc: %d)\n", data->cmd[i]->here_doc_file, data->cmd[i]->pos_here_doc);
+        else
+            ft_printf("  here_doc_file: (null)\n");
+
+        if (data->cmd[i]->output_file)
+            ft_printf("  output_file: %s (pos_output: %d)\n", data->cmd[i]->output_file, data->cmd[i]->pos_output);
+        else
+            ft_printf("  output_file: (null)\n");
+
+        if (data->cmd[i]->append_file)
+            ft_printf("  append_file: %s (pos_append: %d)\n", data->cmd[i]->append_file, data->cmd[i]->pos_append);
+        else
+            ft_printf("  append_file: (null)\n");
+
+        i++;
+    }
 }
 
-void	free_commands(t_command *cmd)
+void	free_data(t_data *data)
 {
 	int	i;
 
-	if (cmd->args)
+	i = 0;
+	// Освобождаем каждую команду
+	while (data->cmd[i] != NULL)
 	{
-		i = 0;
-		while (cmd->args[i])
-		{
-			free(cmd->args[i]);
-			i++;
-		}
-		free(cmd->args);
+		if (data->cmd[i]->cmd)
+			free(data->cmd[i]->cmd);
+		if (data->cmd[i]->cmd_arg)
+			free(data->cmd[i]->cmd_arg);
+		if (data->cmd[i]->input_file)
+			free(data->cmd[i]->input_file);
+		if (data->cmd[i]->here_doc_file)
+			free(data->cmd[i]->here_doc_file);
+		if (data->cmd[i]->output_file)
+			free(data->cmd[i]->output_file);
+		if (data->cmd[i]->append_file)
+			free(data->cmd[i]->append_file);
+		free(data->cmd[i]);
+		i++;
 	}
-	if (cmd->input_file)
-		free(cmd->input_file);
-	if (cmd->output_file)
-		free(cmd->output_file);
-	free(cmd);
+	free(data->cmd);
+	free(data);
 }
 
 int	main(void)
 {
-	char		*user_input;
-	char		**envp;
-	t_command	*commands;
+	char	*user_input;
+	t_data	*data;
 
-	envp = environ;
 	while (1)
 	{
 		user_input = readline("minishell$ ");
@@ -72,16 +86,17 @@ int	main(void)
 			break ;
 		if (ft_strlen(user_input) > 0)
 			add_history(user_input);
-		// Парсим введённую строку и получаем структуру команды
-		commands = parse_pipeline(user_input, envp);
-		if (commands)
+		data = malloc(sizeof(t_data));
+		if (!data)
 		{
-			print_command(commands); // для дебага
-			execute_pipeline(commands);
-			free_commands(commands);
-			// Функция для освобождения структуры команды
-			free(user_input);
+			perror("malloc failed");
+			return (1);
 		}
+		ft_memset(data, 0, sizeof(t_data));
+		parse_pipeline(data, user_input);
+		print_commands(data); // Вывод команд для дебага
+		free_data(data);
+		free(user_input);
 	}
 	rl_clear_history();
 	return (0);

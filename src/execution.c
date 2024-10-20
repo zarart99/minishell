@@ -1,11 +1,11 @@
 #include "../include/minishell.h"
 
-// Function to execute a single command with redirection and pipe handling
+/*// Function to execute a single command with redirection and pipe handling
 void execute_command(t_command *cmd, int pipefd[2])
 {
     if (cmd->here_doc) {
         // Handle here_doc redirection
-        launch_here_doc(cmd->args, pipefd);
+        launch_here_doc(cmd->cmd[0], pipefd);
     } 
     else if (cmd->input_file) {
         // Handle input redirection <
@@ -22,16 +22,17 @@ void execute_command(t_command *cmd, int pipefd[2])
     }
     
     // Execute the command normally
-    char *cmd_path = find_command(cmd->args[0], cmd->envp);
+    char *cmd_path = find_command(cmd->cmd[0][0], cmd->envp); // Команда находится в cmd[0][0]
     if (!cmd_path) {
         ft_putstr_fd("Command not found\n", 2);
         exit(127);
     }
-    execve(cmd_path, cmd->args, cmd->envp);
+    execve(cmd_path, cmd->cmd[0], cmd->envp); // Передаем массив аргументов команды
     perror("execve");
     free(cmd_path);
     exit(EXIT_FAILURE);
 }
+
 
 
 // Main function to handle pipeline execution with pipes and redirections
@@ -41,10 +42,11 @@ void execute_pipeline(t_command *commands)
     int prev_pipe = -1;
     int i = 0;
 
-    while (commands->args[i])
+    // Проходим по каждой команде
+    while (commands->cmd[i])
     {
         // Создаем пайп только если это не последняя команда
-        if (commands->args[i+1] != NULL)
+        if (commands->cmd[i+1] != NULL)
         {
             if (pipe(pipefd) == -1)  // Убедитесь, что pipe успешно создан
                 error_exit("pipe error");
@@ -66,7 +68,7 @@ void execute_pipeline(t_command *commands)
                 dup2(prev_pipe, STDIN_FILENO);  // Используем вывод предыдущей команды как ввод
                 close(prev_pipe);  // Закрываем старый файловый дескриптор только после использования
             }
-            if (commands->args[i+1] != NULL) {
+            if (commands->cmd[i+1] != NULL) {
                 dup2(pipefd[1], STDOUT_FILENO);  // Перенаправляем вывод на следующую команду
                 close(pipefd[1]);  // Закрываем только дескриптор записи
             }
@@ -91,6 +93,7 @@ void execute_pipeline(t_command *commands)
     // Ожидание завершения всех дочерних процессов
     while (wait(NULL) > 0);
 }
+*/
 /*
 pid_t	create_fork(void)
 {

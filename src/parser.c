@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   parser.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/10/10 01:23:19 by artemii           #+#    #+#             */
-/*   Updated: 2024/10/15 01:41:56 by artemii          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../include/minishell.h"
 
 void	free_split(char **args)
@@ -25,89 +13,107 @@ void	free_split(char **args)
 	free(args);
 }
 
-void	handle_redirections_and_pipes(t_command *command, char **tokens, int *i)
+// Обработка редиректов. Тут наполняем структуру и проставляем позиции для редиректов.
+void	handle_redirection(t_cmd *cmd, char **tokens, int *i,
+		int *redir_position)
 {
-	if (ft_strcmp(tokens[*i], "<") == 0)
+	if (ft_strcmp(tokens[*i], "<") == 0) // Входной редирект
 	{
 		*i += 1;
-		command->input_file = ft_strdup(tokens[*i]); // Сохраняем имя файла для ввода
+		cmd->input_file = ft_strdup(tokens[*i]);
+		cmd->pos_input = (*redir_position)++;
+		// Устанавливаем позицию и увеличиваем счётчик
 	}
-	else if (ft_strcmp(tokens[*i], ">") == 0) // Если найден оператор вывода
+	else if (ft_strcmp(tokens[*i], ">") == 0)
 	{
 		*i += 1;
-		command->output_file = ft_strdup(tokens[*i]);
+		cmd->output_file = ft_strdup(tokens[*i]);
+		cmd->pos_output = (*redir_position)++;
 	}
 	else if (ft_strcmp(tokens[*i], ">>") == 0)
 	{
 		*i += 1;
-		command->output_file = ft_strdup(tokens[*i]);
-		command->append = 1; // Устанавливаем флаг append(что нам надо обрабатывать в конец файла)
+		cmd->append_file = ft_strdup(tokens[*i]);
+		cmd->pos_append = (*redir_position)++;
 	}
-	else if (ft_strcmp(tokens[*i], "<<") == 0) // Если найден оператор here_doc
+	else if (ft_strcmp(tokens[*i], "<<") == 0)
 	{
 		*i += 1;
-		command->here_doc = ft_strdup(tokens[*i]); // Кладём слово после << как LIM
+		cmd->here_doc_file = ft_strdup(tokens[*i]);
+		cmd->pos_here_doc = (*redir_position)++;
 	}
-	else if (ft_strcmp(tokens[*i], "|") == 0)
-		command->is_pipe = 1; // Устанавливаем флаг пайпа (наверное пригодится)
 }
 
-void	handle_arguments(t_command *cmd, char **tokens, int *i, int *arg_idx)
+// Обработка аргументов команды
+void	handle_command_args(t_cmd *cmd, char **tokens, int *i)
 {
-	cmd->args[*arg_idx] = ft_strdup(tokens[*i]); // Сохраняем аргумент
-	*arg_idx += 1;
+	char	*tmp;
+
+	if (cmd->cmd == NULL)
+		cmd->cmd = ft_strdup(tokens[*i]); // Кладём команду
+	else
+	{
+		if (cmd->cmd_arg == NULL)
+			cmd->cmd_arg = ft_strdup(tokens[*i]); // Первый аргумент
+		else
+		{
+			tmp = ft_strjoin(cmd->cmd_arg, " ");
+			cmd->cmd_arg = ft_strjoin(tmp, tokens[*i]); // Соединяем аргументы
+			free(tmp);
+		}
+	}
 }
 
-void	parse_input(t_command *command, char *input, int *cmd_idx)
+void	parse_single_command(t_cmd *cmd, char *input)
 {
 	int		i;
-	char	*tmp;
-	char **tokens = ft_split_quotes(input); // Разбиваем строку на слова с учётом кавычек - все что в кавычках как одно слово
+	char	**tokens;
+	int		redir_position;
 
 	i = 0;
-	char *full_command = NULL; // Для объединения аргументов команды
+	redir_position = 1; // Счётчик для позиций редиректов
+	tokens = ft_split_quotes(input);
 	while (tokens[i] != NULL)
 	{
+		// Обрабатываем редиректы
 		if (ft_strcmp(tokens[i], "<") == 0 || ft_strcmp(tokens[i], ">") == 0
 			|| ft_strcmp(tokens[i], ">>") == 0 || ft_strcmp(tokens[i],
 				"<<") == 0)
-			handle_redirections_and_pipes(command, tokens, &i);
+			handle_redirection(cmd, tokens, &i, &redir_position);
 		else
-		{
-			if (full_command == NULL)
-				full_command = ft_strdup(tokens[i]);
-			else
-			{
-				tmp = full_command;
-				full_command = ft_strjoin(full_command, " ");
-				full_command = ft_strjoin(full_command, tokens[i]);
-				free(tmp);
-			}
-		}
+			handle_command_args(cmd, tokens, &i);
 		i++;
 	}
-	command->args[*cmd_idx] = full_command;
-	command->args[*cmd_idx + 1] = NULL; // Завершаем массив команд
-	free_split(tokens);
+	free_split(tokens); // Освобождаем временный массив токенов
 }
 
-// Разбор строк с пайпами и их аргументами
-t_command	*parse_pipeline(char *input, char **envp)
+void	parse_pipeline(t_data *data, char *input)
 {
-	int	i;
-	t_command *command = malloc(sizeof(t_command));	// Выделяем память для структуры команды
-	char **command_tokens = ft_split(input, '|');  	// Разделяем строку на команды по пайпам (токен - это то что между пайпами тут)
+	char	**command_tokens;
+	int		cmd_count;
+	int		i;
 
+	cmd_count = 0;
 	i = 0;
-	ft_memset(command, 0, sizeof(t_command));
-	command->envp = envp;
-	command->args = malloc(sizeof(char *) * 100); // Выделяем память под массив команд
-	while (command_tokens[i] != NULL) 	// Проходим по каждому токену команды
+	// Разбиваем строку на команды по пайпам
+	command_tokens = ft_split(input, '|');
+	while (command_tokens[cmd_count] != NULL)
+		cmd_count++;
+	data->cmd = malloc(sizeof(t_cmd *) * (cmd_count + 1));
+	data->nb_pipe = cmd_count - 1; // Количество пайпов = команд - 1
+	// Для каждой команды вызываем парсер
+	while (i < cmd_count)
 	{
-		parse_input(command, command_tokens[i], &i); // Наполняем структуру командой
+		data->cmd[i] = malloc(sizeof(t_cmd));
+		if (!data->cmd[i])
+		{
+			perror("malloc failed");
+			return ;
+		}
+		ft_memset(data->cmd[i], 0, sizeof(t_cmd)); // Инициализируем структуру
+		parse_single_command(data->cmd[i], command_tokens[i]);
 		i++;
 	}
-	command->args[i] = NULL;    // Завершаем массив команд
-	free_split(command_tokens); // Освобождаем временный массив строк
-	return (command);
+	data->cmd[cmd_count] = NULL; // Завершаем массив структур
+	free_split(command_tokens);  // Освобождаем временный массив токенов
 }
