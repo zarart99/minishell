@@ -17,7 +17,7 @@ typedef struct s_cmd
     char *here_doc_file;  // Для "<<"
     int pos_here_doc;     // Позиция для приоритета here_doc
     char *cmd;            // Основная команда (например, "echo")
-    char *cmd_arg;        // Аргументы команды (например, "hello world")
+    char **cmd_arg;        // Аргументы команды (например, "hello world")
     char *output_file;    // Для ">"
     char *append_file;    // Для ">>"
     int pos_output;       // Позиция для приоритета вывода
