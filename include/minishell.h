@@ -50,6 +50,7 @@ void		error_exit(const char *message);
 //void		execute_pipeline(t_data *commands);
 char		**ft_split_quotes(const char *input);
 void		free_structure(t_data *command);
+char        *replace_env_var(char *input);
 
 int         ft_strncmp(const char *s1, const char *s2, size_t n);
 char        *get_next_line(int fd);

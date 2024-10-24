@@ -14,7 +14,8 @@ void	free_split(char **args)
 }
 
 // Обработка редиректов и установка позиций
-void	handle_redirection(t_cmd *cmd, char **tokens, int *i, int *redir_position)
+void	handle_redirection(t_cmd *cmd, char **tokens, int *i,
+		int *redir_position)
 {
 	if (ft_strcmp(tokens[*i], "<") == 0) // Входной редирект
 	{
@@ -45,10 +46,11 @@ void	handle_redirection(t_cmd *cmd, char **tokens, int *i, int *redir_position)
 void	handle_command_args(t_cmd *cmd, char **tokens, int *i, int *arg_idx)
 {
 	if (cmd->cmd_arg == NULL)
-	{	cmd->cmd_arg = malloc(sizeof(char *) * 100);
+	{
+		cmd->cmd_arg = malloc(sizeof(char *) * 100);
 		cmd->cmd = ft_strdup(tokens[*i]);
 	}
-	cmd->cmd_arg[(*arg_idx)++] = ft_strdup(tokens[*i]); 
+	cmd->cmd_arg[(*arg_idx)++] = ft_strdup(tokens[*i]);
 }
 
 void	parse_single_command(t_cmd *cmd, char *input)
@@ -64,8 +66,9 @@ void	parse_single_command(t_cmd *cmd, char *input)
 	tokens = ft_split_quotes(input);
 	while (tokens[i] != NULL)
 	{
-		if (ft_strcmp(tokens[i], "<") == 0 || ft_strcmp(tokens[i], ">") == 0 ||
-			ft_strcmp(tokens[i], ">>") == 0 || ft_strcmp(tokens[i], "<<") == 0)
+		if (ft_strcmp(tokens[i], "<") == 0 || ft_strcmp(tokens[i], ">") == 0
+			|| ft_strcmp(tokens[i], ">>") == 0 || ft_strcmp(tokens[i],
+				"<<") == 0)
 			handle_redirection(cmd, tokens, &i, &redir_position);
 		else
 			handle_command_args(cmd, tokens, &i, &arg_idx);
@@ -78,18 +81,19 @@ void	parse_single_command(t_cmd *cmd, char *input)
 // Парсинг пайплайна команд
 void	parse_pipeline(t_data *data, char *input)
 {
+	char	*processed_input;
 	char	**command_tokens;
 	int		cmd_count;
 	int		i;
 
+    processed_input = replace_env_var(input);
 	cmd_count = 0;
 	i = 0;
-	command_tokens = ft_split(input, '|');
+	command_tokens = ft_split(processed_input, '|');
 	while (command_tokens[cmd_count] != NULL)
 		cmd_count++;
 	data->cmd = malloc(sizeof(t_cmd *) * (cmd_count + 1));
 	data->nb_pipe = cmd_count - 1; // Количество пайпов = команд - 1
-
 	while (i < cmd_count)
 	{
 		data->cmd[i] = malloc(sizeof(t_cmd));
