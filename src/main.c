@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/10/22 05:06:30 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/10/23 02:27:57 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,7 @@ int	main(int argc, char **argv, char **envp)
 		print_commands(data); // Вывод команд для дебага
 		printf("\n---------\n");//Отделяем вывод команды от дебага
 		choice_execution(data);
+		printf("status %i\n", data->exit_status);
 		free_data(data);
 		free(user_input);
 	}

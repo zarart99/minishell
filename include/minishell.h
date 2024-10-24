@@ -91,4 +91,6 @@ void		error_empty_cmd(t_data *data);
 void		free_error_cmd(char **strs_argv, t_data *data);
 void		error_open_outfile(int flag);
 
+
+void	free_data(t_data *data);
 #endif

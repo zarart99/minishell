@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 04:07:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/22 04:38:55 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/10/25 00:16:32 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ void	error_empty_cmd(t_data *data)
 	write(2, "Error: Empty command\n", 21);
 	if (data->flag_pipe > 0)
 		free_pipe(0);
+	free_data(data);
 	exit(127);
 }
 
@@ -30,9 +31,10 @@ void	error_cmd(int flag)
 
 void	free_error_cmd(char **strs_argv, t_data *data)
 {
-	ft_free_strs(strs_argv);
+	ft_free_strs(strs_argv); //После замены массива убрать это
 	if (data->flag_pipe > 0)
 		free_pipe(0);
+	free_data(data);
 	exit(127);
 }
 
