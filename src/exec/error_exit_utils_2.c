@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_exit_utils_2.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 04:07:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/25 00:16:32 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/10/26 01:19:03 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,9 @@ void	error_cmd(int flag)
 	exit(127);
 }
 
-void	free_error_cmd(char **strs_argv, t_data *data)
+void	free_error_cmd(t_data *data)
 {
-	ft_free_strs(strs_argv); //После замены массива убрать это
-	if (data->flag_pipe > 0)
+	if (data->flag_pipe > 0) // -v
 		free_pipe(0);
 	free_data(data);
 	exit(127);

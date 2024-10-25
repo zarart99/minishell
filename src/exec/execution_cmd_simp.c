@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_cmd_simp.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:53:45 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/25 00:48:06 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/10/26 01:19:06 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,18 +66,17 @@ void	redirection_output(t_data *data, int pipefd[2])
 
 void	ft_launch_cmd(t_data *data, int pipefd[2])
 {
-	char	**strs_argv;
 	char	*cmd;
 
 	redirection_input(data, pipefd);
 	redirection_output(data, pipefd);
-	if (data->cmd[data->i]->cmd_arg != NULL)//Вставь сюда вторую строку из массива аргументов
+	if (data->cmd[data->i]->cmd_arg[1] != NULL)//Вставь сюда вторую строку из массива аргументов -v
 	{
-		if (access(data->cmd[data->i]->cmd_arg, F_OK) == 0)  //тоже самое 
+		if (access(data->cmd[data->i]->cmd_arg[1], F_OK) == 0)  //тоже самое -v
 		{
 			if (data->flag_pipe == 1)
 				free_pipe(0);
-       		if (access(data->cmd[data->i]->cmd_arg, R_OK) == -1)//тоже самое 
+       		if (access(data->cmd[data->i]->cmd_arg[1], R_OK) == -1)//тоже самое -v
       	  	{
 				write(2, "Error file in arg :Permission denied\n", 37);
 				exit(1);
@@ -86,17 +85,14 @@ void	ft_launch_cmd(t_data *data, int pipefd[2])
 	}
 	if (data->cmd[data->i]->cmd[0] == '\0')
 		error_empty_cmd(data);
-	strs_argv = join_arg(data);//После внедрения масива строк для аргумента , убери эту функцию и указатель на указатели
-	if (strs_argv == NULL)//Это тоже
-		error_join_arg(data);//Тоже
 	if (access(data->cmd[data->i]->cmd, F_OK | X_OK) == 0)
 		cmd = ft_strdup(data->cmd[data->i]->cmd);
 	else
 		cmd = ft_envp_cherch(data->cmd[data->i]->cmd, data->envp);
 	if (cmd == NULL)
-		free_error_cmd(strs_argv, data);//Переделай функции убери strs_argv
-	if (execve(cmd, strs_argv, data->envp) == -1)//Вместо strs_argv поставь масив для аргументов
-		free_fault_execve(strs_argv, cmd, data);//Переделай функции убери strs_argv
+		free_error_cmd(data);//Переделай функции убери strs_argv -v
+	if (execve(cmd, data->cmd[data->i]->cmd_arg, data->envp) == -1)//Вместо strs_argv поставь масив для аргументов -v
+		free_fault_execve(data->cmd[data->i]->cmd_arg, cmd, data);//Переделай функции убери strs_argv -v
 }
 
 void	execution_cmd(t_data *data)
