@@ -6,13 +6,12 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:06:33 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/22 05:15:06 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/10/24 23:38:12 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-//В этой функции будем выбирать между исполнением наших команд и системных
 void	choice_execution(t_data *data)
 {
 	execution_cmd(data);
