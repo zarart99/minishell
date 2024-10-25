@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 00:06:31 by artemii           #+#    #+#             */
-/*   Updated: 2024/10/25 00:53:08 by artemii          ###   ########.fr       */
+/*   Updated: 2024/10/26 01:48:11 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ char *process_variable(char *result, int *i)
     return (result);
 }
 
-char *replace_env_var(char *input)
+char *replace_env_var(char *input) // Функция, которая заменяет переменные окружения на их значения
 {
     char *result;
     int i;

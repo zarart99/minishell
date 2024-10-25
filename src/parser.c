@@ -86,7 +86,7 @@ void	parse_pipeline(t_data *data, char *input)
 	int		cmd_count;
 	int		i;
 
-    processed_input = replace_env_var(input);
+    processed_input = replace_env_var(input); // Смотрим, если у нас есть переменные $ и обрабатываем.
 	cmd_count = 0;
 	i = 0;
 	command_tokens = ft_split(processed_input, '|');
@@ -108,4 +108,5 @@ void	parse_pipeline(t_data *data, char *input)
 	}
 	data->cmd[cmd_count] = NULL;
 	free_split(command_tokens);
+	free(processed_input);
 }
