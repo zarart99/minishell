@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 04:08:02 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/22 04:39:08 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/10/25 00:14:53 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,12 @@ void	free_fault_execve(char **strs, char *cmd, t_data *data)
 		i++;
 	}
 	free(strs);
-	strs = NULL;
+	strs = NULL;//Когда заменишь массив на свой удали все до сюда, то что ниже оставь 
 	free(cmd);
 	cmd = NULL;
 	if (data->flag_pipe > 0)
 		free_pipe(0);
+	free_data(data);
 	perror("ERROR execve");
 	exit(126);
 }
@@ -72,5 +73,6 @@ void	error_join_arg(t_data *data)
 	write(2, "ERROR join_arg\n", 15);
 	if (data->flag_pipe > 0)
 		free_pipe(0);
+	free_data(data);
 	exit(EXIT_FAILURE);
 }

@@ -89,7 +89,9 @@ void		ft_error_exit(int nb);
 void		free_pipe(int fd);
 void	    error_join_arg(t_data *data);
 void		error_empty_cmd(t_data *data);
-void		free_error_cmd(char **strs_argv, t_data *data);
+void		free_error_cmd(t_data *data);
 void		error_open_outfile(int flag);
 
+
+void	free_data(t_data *data);
 #endif

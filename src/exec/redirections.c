@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 00:47:25 by artemii           #+#    #+#             */
-/*   Updated: 2024/10/22 04:40:09 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/10/25 00:36:44 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void ft_redirection_in(t_data *data, int pipefd[2])
         perror("Error opening input file");
         if (data->i != data->nb_pipe)
             close(pipefd[1]);
+        free_data(data);
         exit(EXIT_FAILURE);
     }
     if (dup2(fd_in, STDIN_FILENO) == -1)
@@ -45,10 +46,13 @@ void ft_redirection_in(t_data *data, int pipefd[2])
         exit(EXIT_FAILURE);
     }
     close(fd_in); // Закрываем дескриптор файла после перенаправления
+    data->flag_pipe = 0;
 }
 
 void	ft_redirection_here_doc(t_data *data, int pipefd[2])
 {
+    int fd_in;
+
     if(data->prev_pipe != -1)
     {
         free_pipe(data->prev_pipe);
@@ -57,6 +61,20 @@ void	ft_redirection_here_doc(t_data *data, int pipefd[2])
     if (data->i != data->nb_pipe)
     {
         close(pipefd[0]);
+    }
+    if (data->cmd[data->i]->input_file != NULL)
+    {
+        fd_in = open(data->cmd[data->i]->input_file, O_RDONLY, 0644);
+        if (fd_in == -1)
+        {
+            perror("Error opening input file:");
+            free_pipe(data->here_doc_pfd);
+		    close(data->here_doc_pfd);
+            if (data->i != data->nb_pipe)
+                close(pipefd[1]);
+            exit (EXIT_FAILURE);
+        }
+        close(fd_in);
     }
 	if (dup2(data->here_doc_pfd, STDIN_FILENO) == -1)
 	{
@@ -113,10 +131,23 @@ void	ft_redirection_out_cmd(t_data *data, int pipefd[2])
 		fd_out = open(data->cmd[data->i]->append_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
     }
 	else
+    {
+        if (data->cmd[data->i]->append_file != NULL)
+        {
+            fd_out = open(data->cmd[data->i]->append_file, O_WRONLY | O_CREAT | O_APPEND, 0644);;
+            if (fd_out == -1)
+            {
+                if (data->flag_pipe > 0)
+		            error_open_outfile(1);
+                else
+                    error_open_outfile(0);
+            }
+            close(fd_out);
+        }
 		fd_out = open(data->cmd[data->i]->output_file, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+    }
 	if (fd_out == -1)
     {
-
         if (data->flag_pipe > 0)
 		    error_open_outfile(1);
         else
@@ -145,41 +176,3 @@ void    ft_redirection_out_pipe(t_data *data, int pipefd[2])
 	}
     close(pipefd[1]);
 }
-
-
-
-
-
-/*void ft_redirection_out_append(char *output_file)
-{
-    int fd_out = open(output_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
-    if (fd_out == -1)
-    {
-        perror("Error opening output file in append mode");
-        exit(EXIT_FAILURE);
-    }
-    if (dup2(fd_out, STDOUT_FILENO) == -1)
-    {
-        perror("Error duplicating file descriptor for append output");
-        close(fd_out);
-        exit(EXIT_FAILURE);
-    }
-    close(fd_out); // Закрываем дескриптор файла после перенаправления
-}
-
-void ft_redirection_out(char *output_file)
-{
-    int fd_out = open(output_file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (fd_out == -1)
-    {
-        perror("Error opening output file");
-        exit(EXIT_FAILURE);
-    }
-    if (dup2(fd_out, STDOUT_FILENO) == -1)
-    {
-        perror("Error duplicating file descriptor for output");
-        close(fd_out);
-        exit(EXIT_FAILURE);
-    }
-    close(fd_out); // Закрываем дескриптор файла после перенаправления
-}*/
