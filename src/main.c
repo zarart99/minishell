@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/10/19 23:54:42 by artemii          ###   ########.fr       */
+/*   Updated: 2024/10/23 02:27:57 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,10 @@ void	free_data(t_data *data)
 	free(data);
 }
 
-int	main(void)
+int	main(int argc, char **argv, char **envp)
 {
+	(void)argc;
+	(void)argv;
 	char	*user_input;
 	t_data	*data;
 
@@ -93,8 +95,12 @@ int	main(void)
 			return (1);
 		}
 		ft_memset(data, 0, sizeof(t_data));
+		data->envp = envp;   //Считываем окружение , нужно для execve
 		parse_pipeline(data, user_input);
 		print_commands(data); // Вывод команд для дебага
+		printf("\n---------\n");//Отделяем вывод команды от дебага
+		choice_execution(data);
+		printf("status %i\n", data->exit_status);
 		free_data(data);
 		free(user_input);
 	}
