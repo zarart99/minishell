@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/10/26 01:02:37 by artemii          ###   ########.fr       */
+/*   Updated: 2024/10/26 01:33:55 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ void	free_data(t_data *data)
 			}
 			free(data->cmd[i]->cmd_arg);
 		}
+		if (data->cmd[i]->cmd)
+			free(data->cmd[i]->cmd);
 		if (data->cmd[i]->input_file)
 			free(data->cmd[i]->input_file);
 		if (data->cmd[i]->here_doc_file)
