@@ -62,7 +62,7 @@ void	parse_single_command(t_cmd *cmd, char *input)
 
 	i = 0;
 	arg_idx = 0;
-	redir_position = 0; // Для отслеживания порядка редиректов
+	redir_position = 1; // Для отслеживания порядка редиректов
 	tokens = ft_split_quotes(input);
 	while (tokens[i] != NULL)
 	{
