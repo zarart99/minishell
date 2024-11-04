@@ -3,37 +3,69 @@
 /*                                                        :::      ::::::::   */
 /*   execution_cmd_simp.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:53:45 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/26 01:19:06 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/03 19:55:32 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
+
+char *get_line() {
+    char *buffer = malloc(256); // Простое выделение памяти для строки
+    if (!buffer) 
+		return NULL;
+    ssize_t n = read(0, buffer, 255); // Чтение из stdin
+    if (n <= 0) 
+	{
+        free(buffer);
+        return NULL; // Если ничего не прочитано, возвращаем NULL
+    }
+    buffer[n] = '\0'; // Завершаем строку
+    return buffer;
+}
 
 void	execution_here_doc(t_data *data)
 {
 	char	*line;
 	int		pipefd[2];
 
+	g_pid = -5;
+	data->heredoc_interrupted = 0;
 	line = NULL;
 	if (pipe(pipefd) == -1)
 		return ;
-	line = get_next_line(0);
-	while (line != NULL)
+	while (1)
 	{
-		if ((ft_strncmp(data->cmd[data->i]->here_doc_file, line, ft_strlen(line) - 1)) == 0)
+	    line = get_line();
+        if (g_pid == -10) 
 		{
-			free(line);
-			break ;
-		}
-		write(pipefd[1], line, ft_strlen(line));
-		free(line);
-		line = get_next_line(0);
+			close(pipefd[1]);
+			free_pipe(pipefd[0]);
+            close(pipefd[0]);
+            free(line); // Освобождаем память, если она была выделена
+			g_pid = -1;
+			data->exit_status = 130;
+            return; // Выходим из функции
+        }
+		if (line == NULL) {
+           break; // Выходим, если достигнут конец ввода
+        }
+        // Проверяем, достигли ли конца here_doc
+       if (ft_strncmp(data->cmd[data->i]->here_doc_file, line, ft_strlen(line) - 1) == 0) {
+            free(line);
+            break;
+        }
+
+        // Записываем в пайп
+        write(pipefd[1], line, ft_strlen(line));
+        free(line);
 	}
+	data->heredoc_interrupted = 1;
 	close(pipefd[1]);
 	data->here_doc_pfd = pipefd[0];
+	g_pid = -1;
 }
 
 void	redirection_input(t_data *data, int pipefd[2])
@@ -79,6 +111,7 @@ void	ft_launch_cmd(t_data *data, int pipefd[2])
        		if (access(data->cmd[data->i]->cmd_arg[1], R_OK) == -1)//тоже самое -v
       	  	{
 				write(2, "Error file in arg :Permission denied\n", 37);
+				free_data(data);
 				exit(1);
 			}
    		}
@@ -92,23 +125,26 @@ void	ft_launch_cmd(t_data *data, int pipefd[2])
 	if (cmd == NULL)
 		free_error_cmd(data);//Переделай функции убери strs_argv -v
 	if (execve(cmd, data->cmd[data->i]->cmd_arg, data->envp) == -1)//Вместо strs_argv поставь масив для аргументов -v
-		free_fault_execve(data->cmd[data->i]->cmd_arg, cmd, data);//Переделай функции убери strs_argv -v
+		free_fault_execve(cmd, data);//Переделай функции убери strs_argv -v
 }
 
 void	execution_cmd(t_data *data)
 {
-	int	pid;
+	int pid;
 	int	pipefd[2];
 
 	data->prev_pipe = -1;
 	data->here_doc_pfd = -1;
 	data->i = 0;
 	data->flag_pipe = 0;
+//	g_pid = -1;
 	while (data->i <= data->nb_pipe)
 	{	
 		if (data->cmd[data->i]->here_doc_file != NULL)
 		{
 			execution_here_doc(data);
+			if (data->heredoc_interrupted != 1)
+				return ;
 			if (data->here_doc_pfd == -1)
 				write(2, "ERROR in here_doc\n", 18);
 		}
@@ -126,7 +162,13 @@ void	execution_cmd(t_data *data)
 			return ;
 		}
 		if (pid == 0)
+		{
+//			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
 			ft_launch_cmd(data, pipefd);
+		}
+		else
+			g_pid = pid;
 		if (data->here_doc_pfd != -1 ) //Нужно ли высвобожать пайп в родительском если это уже сделанно в дочернем?
 		{
 			close(data->here_doc_pfd);
