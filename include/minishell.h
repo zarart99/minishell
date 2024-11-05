@@ -9,6 +9,7 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <signal.h>
 
 typedef struct s_cmd
 {
@@ -34,8 +35,11 @@ typedef struct s_data
     int here_doc_pfd; // канал для чтения данных принятых here_doc ,                                       //add
     int flag_pipe;    //Что бы определить если заполненый пайп                                      //add
     int exit_status;  //Сохраняем индекс последнего процесса запущеной команды
+
+    int heredoc_interrupted;
 } t_data;
 
+extern int g_pid;
 
 void		parse_pipeline(t_data *command, char *input);
 // void	execute_pipeline(char ***commands, char **envp);
@@ -83,15 +87,17 @@ void        ft_redirection_out_cmd(t_data *data, int pipefd[2]);        //Пер
 void        ft_redirection_out_pipe(t_data *data, int pipefd[2]);       //Переадресация из команды в пайп
 
 /*Блок для корректного выхода из процесса из за ошибок */
-void		free_fault_execve(char **strs, char *cmd, t_data *data);
+void	free_fault_execve(char *cmd, t_data *data);
 void		ft_free_strs(char **strs);
 void		ft_error_exit(int nb);
 void		free_pipe(int fd);
 void	    error_join_arg(t_data *data);
 void		error_empty_cmd(t_data *data);
 void		free_error_cmd(t_data *data);
-void		error_open_outfile(int flag);
+void	    error_open_outfile(int flag , t_data *data);
 
 
 void	free_data(t_data *data);
+
+void    handle_sigint(int sig);
 #endif

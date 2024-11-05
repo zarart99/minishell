@@ -6,24 +6,14 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 04:08:02 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/25 00:14:53 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/10/26 19:25:17 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void	free_fault_execve(char **strs, char *cmd, t_data *data)
+void	free_fault_execve(char *cmd, t_data *data)
 {
-	int	i;
-
-	i = 0;
-	while (strs[i] != NULL)
-	{
-		free(strs[i]);
-		i++;
-	}
-	free(strs);
-	strs = NULL;//Когда заменишь массив на свой удали все до сюда, то что ниже оставь 
 	free(cmd);
 	cmd = NULL;
 	if (data->flag_pipe > 0)
