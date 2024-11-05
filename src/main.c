@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/05 06:26:51 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/05 21:04:20 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,10 +100,18 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	*user_input;
 	t_data	*data;
-	g_pid = -1; //-1 == родительский процесс
+	int exit_status;
 	
-	(void)argc;
+
+//	(void)argc;
 	(void)argv;
+	if (argc > 2) //Проверка на количество аргументов
+	{
+		write(2, "Too many arguments\n", 19);
+		return (1);
+	}
+	exit_status = 0;
+	g_pid = -1; //-1 == родительский процесс
 	signal(SIGINT, handle_sigint); //Функция которая обрабатывает сигнал ctrl c , во всех процессах
 	signal(SIGQUIT, SIG_IGN); //Функция которая обрабатывает сигнал ctrl '\' . В родительском процессе , игнорирует сигнал
 	while (1)
@@ -122,10 +130,12 @@ int	main(int argc, char **argv, char **envp)
 		ft_memset(data, 0, sizeof(t_data));
 		data->envp = envp; //Считываем окружение , нужно для execve
 		parse_pipeline(data, user_input);
+		data->exit_status = exit_status; //Перед запуском новой команды подгружаем статус старой команды
 		print_commands(data);    // Вывод команд для дебага
 		printf("\n---------\n"); //Отделяем вывод команды от дебага
 		choice_execution(data);
 		printf("status %i\n", data->exit_status);
+		exit_status = data->exit_status; //Сохраняем статус завершения команды перед освобождением
 		free_data(data);
 		free(user_input);
 	}

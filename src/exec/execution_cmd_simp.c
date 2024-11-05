@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:53:45 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/05 06:26:19 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/05 20:13:12 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,11 @@ void	execution_here_doc(t_data *data)
 		return ;
 	}
 	in = dup(0);//Дублируем стандратный ввод в переменную так как мы в процессе получения сигнала закроем fd стандратного входа и нам его нужно будет востановить потом
+	write(1, "> ", 2);
 	line = get_next_line(0);
 	while (line != NULL)
 	{
+		
 		if (ft_strncmp(data->cmd[data->i]->here_doc_file, line, ft_strlen(line) - 1) == 0 && line[0] != '\n')
 		{
 			free(line);
@@ -38,6 +40,7 @@ void	execution_here_doc(t_data *data)
 		}
 		write(pipefd[1], line, ft_strlen(line));
 		free(line);
+		write(1, "> ", 2);
 		line = get_next_line(0);
 	}
 	if (g_pid == -10) //Если мы вышли из цикла из за обработчика сигнала SIGINT то входим в это условие 
