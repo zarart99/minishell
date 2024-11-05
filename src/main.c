@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/03 19:48:13 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/05 06:26:51 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,21 +100,14 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	*user_input;
 	t_data	*data;
-	g_pid = -1;
+	g_pid = -1; //-1 == родительский процесс
 	
 	(void)argc;
 	(void)argv;
-	struct sigaction sa;
-	ft_bzero(&sa, sizeof(sa));
-    sa.sa_handler = handle_sigint; // Устанавливаем обработчик сигнала
-    sa.sa_flags = 0; // Устанавливаем без SA_RESTART
-    sigemptyset(&sa.sa_mask); // Очищаем маску сигналов
-    sigaction(SIGINT, &sa, NULL);
-//	signal(SIGINT, handle_sigint);
-	signal(SIGQUIT, SIG_IGN);
+	signal(SIGINT, handle_sigint); //Функция которая обрабатывает сигнал ctrl c , во всех процессах
+	signal(SIGQUIT, SIG_IGN); //Функция которая обрабатывает сигнал ctrl '\' . В родительском процессе , игнорирует сигнал
 	while (1)
 	{
-
 		user_input = readline("minishell$ ");
 		if (!user_input)
 			break ;
