@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:53:45 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/05 20:13:12 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/06 04:48:49 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,6 +100,7 @@ void	ft_launch_cmd(t_data *data, int pipefd[2])
 
 	redirection_input(data, pipefd);
 	redirection_output(data, pipefd);
+	check_builtin(data);
 	if (data->cmd[data->i]->cmd_arg[1] != NULL)
 	{
 		if (access(data->cmd[data->i]->cmd_arg[1], F_OK) == 0)
