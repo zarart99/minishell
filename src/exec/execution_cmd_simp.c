@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:53:45 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/26 01:19:06 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/10 20:18:47 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,10 +64,52 @@ void	redirection_output(t_data *data, int pipefd[2])
 	}
 }
 
+int	execute_builtin_command(t_data *data)
+{
+    char **args = data->cmd[data->i]->cmd_arg;
+
+    // Обработка команды "export"
+    if (ft_strcmp(args[0], "export") == 0)
+    {
+        // Проверяем, есть ли аргументы для команды export
+        if (args[1] != NULL)
+        {
+            // Передаем полный аргумент args[1] в export_var в формате "KEY=VALUE" или "KEY"
+            if (export_var(data, args[1]) == 0)
+            {
+                // Успешное выполнение export_var, можно вывести env или другую отладку
+                // print_env(data);
+                return (0);
+            }
+        }
+        else
+        {
+            return (1); // Ошибка: нет аргументов для export
+        }
+    }
+    // Обработка команды "unset"
+    else if (ft_strcmp(args[0], "unset") == 0 && args[1] != NULL)
+    {
+        return (unset_var(data, args[1])); // Удаляем переменную
+    }
+    // Обработка команды "env"
+    else if (ft_strcmp(args[0], "env") == 0)
+    {
+        print_env(data); // Выводим все переменные
+        return (1);
+    }
+    return (1); // Не встроенная команда
+}
+
+
+
 void	ft_launch_cmd(t_data *data, int pipefd[2])
 {
 	char	*cmd;
 
+	if (execute_builtin_command(data) == 0)
+		return; // Завершаем процесс, если встроенная команда выполнена
+		
 	redirection_input(data, pipefd);
 	redirection_output(data, pipefd);
 	if (data->cmd[data->i]->cmd_arg[1] != NULL)//Вставь сюда вторую строку из массива аргументов -v

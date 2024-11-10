@@ -11,7 +11,10 @@ SRCS = src/main.c\
 		src/exec/ft_envp_cherch_bonus.c\
 		src/exec/error_exit_utils.c\
 		src/exec/error_exit_utils_2.c \
-		src/env_var_parser.c
+		src/envp_functions/env_var_parser.c \
+		src/envp_functions/export_var.c \
+		src/envp_functions/print_envp.c \
+		src/envp_functions/unset_var.c \
 
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a

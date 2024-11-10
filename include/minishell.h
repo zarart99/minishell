@@ -38,19 +38,19 @@ typedef struct s_data
 
 
 void		parse_pipeline(t_data *command, char *input);
-// void	execute_pipeline(char ***commands, char **envp);
 void		free_parsed_commands(t_data **commands);
 char		*find_command(char *cmd, char **envp);
 void		free_split(char **args);
 void		error_exit(const char *message);
-//void		launch_here_doc(char **argv, int pipefd[2]);
-//void		ft_redirection_in(char *input_file);
-//void		ft_redirection_out_append(char *output_file);
-//void		ft_redirection_out(char *output_file);
-//void		execute_pipeline(t_data *commands);
 char		**ft_split_quotes(const char *input);
 void		free_structure(t_data *command);
-char        *replace_env_var(char *input);
+// Функции для работы с переменными окружения
+char	    *replace_env_var(char *input, t_data *data);
+char	    *replace_substring(char *str, int start, int end, char *replacement);
+int	unset_var(t_data *data, char *key);
+int	export_var(t_data *data, const char *input);
+void	    print_env(t_data *data);
+
 
 int         ft_strncmp(const char *s1, const char *s2, size_t n);
 char        *get_next_line(int fd);

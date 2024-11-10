@@ -6,11 +6,11 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 00:06:31 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/02 19:18:29 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/10 19:18:01 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/minishell.h"
+#include "../../include/minishell.h"
 
 char	*extract_var_name(const char *str)
 {
@@ -25,22 +25,24 @@ char	*extract_var_name(const char *str)
 }
 
 // Проверка на существование переменной в окружении (без получения её значения)
-int	env_var_exists(const char *name)
+int	env_var_exists(const char *name, t_data *data)
 {
-	extern char	**environ;
-	int			len;
+	int	len;
+	int	i;
 
-	len = strlen(name);
-	for (int i = 0; environ[i] != NULL; i++)
+	len = ft_strlen(name);
+	i = 0;
+	while (data->envp[i] != NULL)
 	{
-		if (strncmp(environ[i], name, len) == 0 && environ[i][len] == '=')
-			return (1); // Переменная существует
+		if (ft_strncmp(data->envp[i], name, len) == 0 && data->envp[i][len] == '=')
+			return (1); // Переменная найдена
+		i++;
 	}
 	return (0); // Переменная не найдена
 }
 
-char	*replace_substring(char *str, int start, int end,
-		const char *replacement)
+
+char	*replace_substring(char *str, int start, int end, char *replacement)
 {
 	char	*new_str;
 	int		new_len;
@@ -57,27 +59,45 @@ char	*replace_substring(char *str, int start, int end,
 	return (new_str);
 }
 
-char	*process_variable(char *result, int *i)
+
+char	*get_env_value(char *name, t_data *data)
+{
+	int	len;
+	int	i;
+
+	len = ft_strlen(name);
+	i = 0;
+	while (data->envp[i] != NULL)
+	{
+		// Ищем совпадение имени переменной до символа '='
+		if (ft_strncmp(data->envp[i], name, len) == 0 && data->envp[i][len] == '=')
+			return (data->envp[i] + len + 1); // Возвращаем указатель на значение после '='
+		i++;
+	}
+	return (NULL); // Переменная не найдена
+}
+
+char	*process_variable(char *result, int *i, t_data *data)
 {
 	char	*var_name;
 	char	*var_value;
 	int		end;
 
-	var_name = extract_var_name(result + *i); //Извлекаем переменную
+	var_name = extract_var_name(result + *i); // Извлекаем имя переменной
 	if (var_name)
 	{
-		if (env_var_exists(var_name)) // Проверяем существование переменной
+		if (env_var_exists(var_name, data)) // Проверяем существование переменной в data->envp
 		{
-			var_value = getenv(var_name);
-			if (var_value == NULL)
-				var_value = ""; // Если переменная существует, но значение пустое
+			var_value = get_env_value(var_name, data); // Получаем значение переменной
+			if (var_value == NULL) // На случай, если переменная найдена, но значение пустое
+				var_value = "";
 			result = replace_substring(result, *i, *i + ft_strlen(var_name) + 1,
 					var_value);
 			*i += ft_strlen(var_value); // Сдвигаем индекс на длину значения
 		}
 		else
 		{
-			end = *i + ft_strlen(var_name) + 1; // Если переменной нет,просто удаляем её из строки
+			end = *i + ft_strlen(var_name) + 1; // Если переменной нет, просто удаляем её из строки
 			ft_memmove(result + *i, result + end, ft_strlen(result + end) + 1);
 		}
 		free(var_name);
@@ -85,10 +105,11 @@ char	*process_variable(char *result, int *i)
 	return (result);
 }
 
-char	*replace_env_var(char *input) // Функция,которая заменяет переменные окружения на их значения
+// Функция,которая заменяет переменные окружения на их значения
+char	*replace_env_var(char *input, t_data *data)
 {
-	char *result;
-	int i;
+	char	*result;
+	int		i;
 
 	i = 0;
 	result = ft_strdup(input);
@@ -97,7 +118,7 @@ char	*replace_env_var(char *input) // Функция,которая заменя
 	while (result[i] != '\0')
 	{
 		if (result[i] == '$')
-			result = process_variable(result, &i);
+			result = process_variable(result, &i, data);
 		else
 			i++;
 	}
