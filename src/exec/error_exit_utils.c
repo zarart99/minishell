@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error_exit_utils.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 04:08:02 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/25 00:14:53 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/12 01:35:50 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	free_fault_execve(char **strs, char *cmd, t_data *data)
 	cmd = NULL;
 	if (data->flag_pipe > 0)
 		free_pipe(0);
-	free_data(data);
+	free_data_cmd(data);
 	perror("ERROR execve");
 	exit(126);
 }
@@ -73,6 +73,6 @@ void	error_join_arg(t_data *data)
 	write(2, "ERROR join_arg\n", 15);
 	if (data->flag_pipe > 0)
 		free_pipe(0);
-	free_data(data);
+	free_data_cmd(data);
 	exit(EXIT_FAILURE);
 }

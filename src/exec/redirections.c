@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 00:47:25 by artemii           #+#    #+#             */
-/*   Updated: 2024/10/25 00:36:44 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/12 01:35:50 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void ft_redirection_in(t_data *data, int pipefd[2])
         perror("Error opening input file");
         if (data->i != data->nb_pipe)
             close(pipefd[1]);
-        free_data(data);
+        free_data_cmd(data);
         exit(EXIT_FAILURE);
     }
     if (dup2(fd_in, STDIN_FILENO) == -1)

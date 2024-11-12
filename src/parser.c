@@ -112,7 +112,7 @@ void parse_pipeline(t_data *data, char *input)
             perror("malloc failed");
             free(processed_input);
             free_split(command_tokens);
-            free_data(data);  // Освобождаем всё, если выделение не удалось
+            free_data_cmd(data);  // Освобождаем всё, если выделение не удалось
             return;
         }
         ft_memset(data->cmd[i], 0, sizeof(t_cmd));

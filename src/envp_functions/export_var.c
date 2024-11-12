@@ -42,6 +42,8 @@ int	export_var(t_data *data, const char *input)
 	char	*key;
 	char	*new_var;
 
+	if (!input)
+		print_env(data); // Если ввели просто export без аргумента - должны вывести что есть в envp
 	key = get_key(input); // Получаем ключ
 	if (!key)
 		return (-1); // Некорректный формат

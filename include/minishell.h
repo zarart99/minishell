@@ -34,6 +34,8 @@ typedef struct s_data
     int here_doc_pfd; // канал для чтения данных принятых here_doc ,                                       //add
     int flag_pipe;    //Что бы определить если заполненый пайп                                      //add
     int exit_status;  //Сохраняем индекс последнего процесса запущеной команды
+    char *user_input;     // Что вводит пользователь
+
 } t_data;
 
 
@@ -91,7 +93,8 @@ void	    error_join_arg(t_data *data);
 void		error_empty_cmd(t_data *data);
 void		free_error_cmd(t_data *data);
 void		error_open_outfile(int flag);
+void	    free_all_data(t_data *data);
 
 
-void	free_data(t_data *data);
+void	free_data_cmd(t_data *data);
 #endif

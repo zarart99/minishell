@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:53:45 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/10 20:18:47 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/13 00:55:38 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,57 +68,43 @@ int	execute_builtin_command(t_data *data)
 {
     char **args = data->cmd[data->i]->cmd_arg;
 
-    // Обработка команды "export"
     if (ft_strcmp(args[0], "export") == 0)
     {
-        // Проверяем, есть ли аргументы для команды export
-        if (args[1] != NULL)
-        {
-            // Передаем полный аргумент args[1] в export_var в формате "KEY=VALUE" или "KEY"
             if (export_var(data, args[1]) == 0)
-            {
-                // Успешное выполнение export_var, можно вывести env или другую отладку
-                // print_env(data);
                 return (0);
-            }
-        }
-        else
-        {
-            return (1); // Ошибка: нет аргументов для export
-        }
+			else // Тут не уверен как правильно. При ошибке, выходим и чистим все
+				{
+					free_all_data(data);
+					exit(data->exit_status);
+				}
     }
     // Обработка команды "unset"
-    else if (ft_strcmp(args[0], "unset") == 0 && args[1] != NULL)
-    {
+    else if (ft_strcmp(args[0], "unset") == 0 )
         return (unset_var(data, args[1])); // Удаляем переменную
-    }
     // Обработка команды "env"
     else if (ft_strcmp(args[0], "env") == 0)
     {
         print_env(data); // Выводим все переменные
-        return (1);
+        return (0);
     }
     return (1); // Не встроенная команда
 }
-
-
 
 void	ft_launch_cmd(t_data *data, int pipefd[2])
 {
 	char	*cmd;
 
-	if (execute_builtin_command(data) == 0)
-		return; // Завершаем процесс, если встроенная команда выполнена
-		
 	redirection_input(data, pipefd);
 	redirection_output(data, pipefd);
-	if (data->cmd[data->i]->cmd_arg[1] != NULL)//Вставь сюда вторую строку из массива аргументов -v
+	if (execute_builtin_command(data) == 0)
+		return; // Это нужно исправить
+	if (data->cmd[data->i]->cmd_arg[1] != NULL)
 	{
-		if (access(data->cmd[data->i]->cmd_arg[1], F_OK) == 0)  //тоже самое -v
+		if (access(data->cmd[data->i]->cmd_arg[1], F_OK) == 0)
 		{
 			if (data->flag_pipe == 1)
 				free_pipe(0);
-       		if (access(data->cmd[data->i]->cmd_arg[1], R_OK) == -1)//тоже самое -v
+       		if (access(data->cmd[data->i]->cmd_arg[1], R_OK) == -1)
       	  	{
 				write(2, "Error file in arg :Permission denied\n", 37);
 				exit(1);
@@ -132,9 +118,9 @@ void	ft_launch_cmd(t_data *data, int pipefd[2])
 	else
 		cmd = ft_envp_cherch(data->cmd[data->i]->cmd, data->envp);
 	if (cmd == NULL)
-		free_error_cmd(data);//Переделай функции убери strs_argv -v
-	if (execve(cmd, data->cmd[data->i]->cmd_arg, data->envp) == -1)//Вместо strs_argv поставь масив для аргументов -v
-		free_fault_execve(data->cmd[data->i]->cmd_arg, cmd, data);//Переделай функции убери strs_argv -v
+		free_error_cmd(data);
+	if (execve(cmd, data->cmd[data->i]->cmd_arg, data->envp) == -1)
+		free_fault_execve(data->cmd[data->i]->cmd_arg, cmd, data);
 }
 
 void	execution_cmd(t_data *data)
