@@ -28,7 +28,6 @@ typedef struct s_cmd
 
 typedef struct s_data
 {
-    char    *user_input;
     char **envp;      // Переменные окружения
     t_cmd **cmd;      // Массив структур команд
     int nb_pipe;      // Количество пайпов
@@ -38,25 +37,29 @@ typedef struct s_data
     int flag_pipe;    //Что бы определить если заполненый пайп                                      //add
     int exit_status;  //Сохраняем индекс последнего процесса запущеной команды
 
-    int heredoc_interrupted;
-    int back_in_main;
+    int heredoc_interrupted; //ДЛя входа из here doc 
+    int back_in_main;        //Для возврата в main после исполнения наших одиночных команд
+    char *user_input;     // Что вводит пользователь
+
 } t_data;
 
 extern int g_pid;
 
 void		parse_pipeline(t_data *command, char *input);
-// void	execute_pipeline(char ***commands, char **envp);
 void		free_parsed_commands(t_data **commands);
 char		*find_command(char *cmd, char **envp);
 void		free_split(char **args);
 void		error_exit(const char *message);
-//void		launch_here_doc(char **argv, int pipefd[2]);
-//void		ft_redirection_in(char *input_file);
-//void		ft_redirection_out_append(char *output_file);
-//void		ft_redirection_out(char *output_file);
-//void		execute_pipeline(t_data *commands);
 char		**ft_split_quotes(const char *input);
 void		free_structure(t_data *command);
+
+// Функции для работы с переменными окружения
+char	    *replace_env_var(char *input, t_data *data);
+char	    *replace_substring(char *str, int start, int end, char *replacement);
+void        unset_var(t_data *data, char *key);
+void        export_var(t_data *data, const char *input);
+void	    print_env(t_data *data);
+
 
 int         ft_strncmp(const char *s1, const char *s2, size_t n);
 char        *get_next_line(int fd);
@@ -99,15 +102,23 @@ void		free_error_cmd(t_data *data);
 void	    error_open_outfile(int flag , t_data *data);
 
 
-void	free_data(t_data *data);
+void	free_data(t_data *data); //Этой функции больше нет? 
 
+
+//Сигналы
 void    handle_sigint(int sig);
 
-void	check_builtin(t_data *data);
+//Наши функции 
+void	execute_builtin_command(t_data *data);
 void	echo(t_data *data);
 int	    check_option_n(char *arg);
-void	close_input(t_data *data);
-
 void	exit_total(t_data *data);
-void	check_exit_total(t_data *data);
+
+
+void	close_input(t_data *data);//Закрываем переадресацию на вход для наших функций 
+
+//void	error_open_outfile(int flag);//Проверить нужен ли ?
+
+void    free_all_data(t_data *data);
+void	free_data_cmd(t_data *data);
 #endif

@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 02:23:35 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/13 03:28:45 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/13 09:18:07 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	echo(t_data *data)
 		if (data->nb_pipe != 0)//Если в составной команде , выходим из дочернего процесса
 		{
 			close(1);
-			free_data(data);
+			free_all_data(data);
 			exit (EXIT_SUCCESS);
 		}
 		else//Если в одиночной команде то просто возвращаемся в main
@@ -73,7 +73,7 @@ void	echo(t_data *data)
 		if (data->nb_pipe != 0)
 		{
 			close(1);
-			free_data(data);
+			free_all_data(data);
 			exit (EXIT_SUCCESS);
 		}
 		else
@@ -94,7 +94,7 @@ void	echo(t_data *data)
 	if (data->nb_pipe != 0)//Выходим
 	{
 		close(1);
-		free_data(data);
+		free_all_data(data);
 		exit (EXIT_SUCCESS);
 	}
 	else

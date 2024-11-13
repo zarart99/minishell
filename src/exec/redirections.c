@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 00:47:25 by artemii           #+#    #+#             */
-/*   Updated: 2024/10/27 22:24:41 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/13 09:27:33 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void ft_redirection_in(t_data *data, int pipefd[2])
         perror("Error opening input file");
         if (data->i != data->nb_pipe)
             close(pipefd[1]);
-        free_data(data);
+        free_data_cmd(data);
         exit(EXIT_FAILURE);
     }
     if (dup2(fd_in, STDIN_FILENO) == -1)
@@ -43,7 +43,7 @@ void ft_redirection_in(t_data *data, int pipefd[2])
         if (data->i != data->nb_pipe)
             close(pipefd[1]);
         close(fd_in);
-        free_data(data);
+        free_all_data(data);
         exit(EXIT_FAILURE);
     }
     close(fd_in); // Закрываем дескриптор файла после перенаправления
@@ -73,7 +73,7 @@ void	ft_redirection_here_doc(t_data *data, int pipefd[2])
 		    close(data->here_doc_pfd);
             if (data->i != data->nb_pipe)
                 close(pipefd[1]);
-            free_data(data);
+            free_all_data(data);
             exit (EXIT_FAILURE);
         }
         close(fd_in);
@@ -85,7 +85,7 @@ void	ft_redirection_here_doc(t_data *data, int pipefd[2])
 		close(data->here_doc_pfd);
         if (data->i != data->nb_pipe)
             close(pipefd[1]);
-        free_data(data);
+        free_all_data(data);
 		exit (EXIT_FAILURE);
 	}
 	close(data->here_doc_pfd);
@@ -103,7 +103,7 @@ void	ft_redirection_pipe(t_data *data, int pipefd[2])
 		close(data->prev_pipe);
         if (data->i != data->nb_pipe)
             close(pipefd[1]);
-        free_data(data);
+        free_all_data(data);
 		exit (EXIT_FAILURE);
 	}
 	close(data->prev_pipe);
@@ -163,7 +163,7 @@ void	ft_redirection_out_cmd(t_data *data, int pipefd[2])
         if (data->flag_pipe > 0)
 		    free_pipe(0);
 		close(fd_out);
-        free_data(data);
+        free_all_data(data);
 		exit (EXIT_FAILURE);
 	}
 	close(fd_out);
@@ -177,7 +177,7 @@ void    ft_redirection_out_pipe(t_data *data, int pipefd[2])
         if (data->flag_pipe > 0)
 		    free_pipe(0);
 		close(pipefd[1]);
-        free_data(data);
+        free_all_data(data);
 		exit (EXIT_FAILURE);
 	}
     close(pipefd[1]);

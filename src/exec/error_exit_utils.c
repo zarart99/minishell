@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 04:08:02 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/26 19:25:17 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/13 05:09:43 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	free_fault_execve(char *cmd, t_data *data)
 	cmd = NULL;
 	if (data->flag_pipe > 0)
 		free_pipe(0);
-	free_data(data);
+	free_data_cmd(data);
 	perror("ERROR execve");
 	exit(126);
 }
@@ -63,6 +63,6 @@ void	error_join_arg(t_data *data)
 	write(2, "ERROR join_arg\n", 15);
 	if (data->flag_pipe > 0)
 		free_pipe(0);
-	free_data(data);
+	free_data_cmd(data);
 	exit(EXIT_FAILURE);
 }

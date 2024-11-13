@@ -85,7 +85,7 @@ static char *get_token_in_quotes(const char *str, int *i, char quote_char)
 
 char **ft_split_quotes(const char *input)
 {
-    char **tokens = malloc(sizeof(char *) * (strlen(input) / 2 + 2)); // например половина строки + запас
+    char **tokens = malloc(sizeof(char *) * (ft_strlen(input) / 2 + 2)); // например половина строки + запас
     int i = 0;
     int token_count = 0;
 

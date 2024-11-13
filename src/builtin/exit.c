@@ -75,7 +75,7 @@ void	exit_total(t_data *data)
 			if (ft_isdigit(data->cmd[data->i]->cmd_arg[1][i_2]) == 0)//Проверяем цифра или нет 
 			{
 				write(2, "exit: numeric argument required\n", 32);
-				free_data(data);
+				free_all_data(data);
 				rl_clear_history();
 				exit(2);
 			}
@@ -92,7 +92,7 @@ void	exit_total(t_data *data)
 			}
 			else//Если команда составная то закрывем процесс и возвращаемся в родительский процесс
 			{
-				free_data(data);
+				free_all_data(data);
 				rl_clear_history();
 				exit (1) ;
 			}		
@@ -102,7 +102,7 @@ void	exit_total(t_data *data)
 			status = status % 256;
 	}
 //	free(data->user_input); peut etre ca aussi
-	free_data(data);
+	free_all_data(data);
 	rl_clear_history();
 	exit(status);
 }

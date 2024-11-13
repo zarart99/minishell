@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:53:45 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/13 02:17:48 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/13 09:24:04 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ void	ft_launch_cmd(t_data *data, int pipefd[2])
 
 	redirection_input(data, pipefd);
 	redirection_output(data, pipefd);
-	check_builtin(data);
+	execute_builtin_command(data);
 	if (data->cmd[data->i]->cmd_arg[1] != NULL)
 	{
 		if (access(data->cmd[data->i]->cmd_arg[1], F_OK) == 0)
@@ -110,7 +110,7 @@ void	ft_launch_cmd(t_data *data, int pipefd[2])
        		if (access(data->cmd[data->i]->cmd_arg[1], R_OK) == -1)
       	  	{
 				write(2, "Error file in arg :Permission denied\n", 37);
-				free_data(data);
+				free_all_data(data);
 				exit(1);
 			}
    		}
@@ -138,7 +138,7 @@ void	execution_cmd(t_data *data)
 	data->flag_pipe = 0;
 	if (data->nb_pipe == 0)
 	{
-		check_builtin(data);
+		execute_builtin_command(data);
 		if (data->back_in_main == 1)
 			return ;
 	}
