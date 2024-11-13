@@ -10,6 +10,7 @@
 # include <sys/wait.h>
 # include <unistd.h>
 # include <signal.h>
+# include <limits.h>
 
 typedef struct s_cmd
 {
@@ -27,6 +28,7 @@ typedef struct s_cmd
 
 typedef struct s_data
 {
+    char    *user_input;
     char **envp;      // Переменные окружения
     t_cmd **cmd;      // Массив структур команд
     int nb_pipe;      // Количество пайпов
@@ -37,6 +39,7 @@ typedef struct s_data
     int exit_status;  //Сохраняем индекс последнего процесса запущеной команды
 
     int heredoc_interrupted;
+    int back_in_main;
 } t_data;
 
 extern int g_pid;
@@ -104,4 +107,7 @@ void	check_builtin(t_data *data);
 void	echo(t_data *data);
 int	    check_option_n(char *arg);
 void	close_input(t_data *data);
+
+void	exit_total(t_data *data);
+void	check_exit_total(t_data *data);
 #endif

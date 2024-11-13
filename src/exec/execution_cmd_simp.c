@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:53:45 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/06 04:48:49 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/13 02:17:48 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,12 @@ void	execution_cmd(t_data *data)
 	data->here_doc_pfd = -1;
 	data->i = 0;
 	data->flag_pipe = 0;
+	if (data->nb_pipe == 0)
+	{
+		check_builtin(data);
+		if (data->back_in_main == 1)
+			return ;
+	}
 	while (data->i <= data->nb_pipe)
 	{	
 		if (data->cmd[data->i]->here_doc_file != NULL)
