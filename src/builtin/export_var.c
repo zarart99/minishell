@@ -49,13 +49,13 @@ static void	handle_export_error(t_data *data, char *key, char *new_var)
 	if (data->nb_pipe == 0)
 	{
 		data->back_in_main = 1;
-		data->exit_status = -1;
+		data->exit_status = 1;
 	}
 	else
 	{
 		close(1);
 		free_all_data(data);
-		exit(-1);
+		exit(1);
 	}
 }
 
