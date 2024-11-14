@@ -6,29 +6,19 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 04:08:02 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/10/25 00:14:53 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/13 05:09:43 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void	free_fault_execve(char **strs, char *cmd, t_data *data)
+void	free_fault_execve(char *cmd, t_data *data)
 {
-	int	i;
-
-	i = 0;
-	while (strs[i] != NULL)
-	{
-		free(strs[i]);
-		i++;
-	}
-	free(strs);
-	strs = NULL;//Когда заменишь массив на свой удали все до сюда, то что ниже оставь 
 	free(cmd);
 	cmd = NULL;
 	if (data->flag_pipe > 0)
 		free_pipe(0);
-	free_data(data);
+	free_data_cmd(data);
 	perror("ERROR execve");
 	exit(126);
 }
@@ -73,6 +63,6 @@ void	error_join_arg(t_data *data)
 	write(2, "ERROR join_arg\n", 15);
 	if (data->flag_pipe > 0)
 		free_pipe(0);
-	free_data(data);
+	free_data_cmd(data);
 	exit(EXIT_FAILURE);
 }

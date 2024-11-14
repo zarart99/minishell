@@ -9,6 +9,8 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include <signal.h>
+# include <limits.h>
 
 typedef struct s_cmd
 {
@@ -34,23 +36,30 @@ typedef struct s_data
     int here_doc_pfd; // канал для чтения данных принятых here_doc ,                                       //add
     int flag_pipe;    //Что бы определить если заполненый пайп                                      //add
     int exit_status;  //Сохраняем индекс последнего процесса запущеной команды
+
+    int heredoc_interrupted; //ДЛя входа из here doc 
+    int back_in_main;        //Для возврата в main после исполнения наших одиночных команд
+    char *user_input;     // Что вводит пользователь
+
 } t_data;
 
+extern int g_pid;
 
 void		parse_pipeline(t_data *command, char *input);
-// void	execute_pipeline(char ***commands, char **envp);
 void		free_parsed_commands(t_data **commands);
 char		*find_command(char *cmd, char **envp);
 void		free_split(char **args);
 void		error_exit(const char *message);
-//void		launch_here_doc(char **argv, int pipefd[2]);
-//void		ft_redirection_in(char *input_file);
-//void		ft_redirection_out_append(char *output_file);
-//void		ft_redirection_out(char *output_file);
-//void		execute_pipeline(t_data *commands);
 char		**ft_split_quotes(const char *input);
 void		free_structure(t_data *command);
-char        *replace_env_var(char *input);
+
+// Функции для работы с переменными окружения
+char	    *replace_env_var(char *input, t_data *data);
+char	    *replace_substring(char *str, int start, int end, char *replacement);
+void        unset_var(t_data *data, char *key);
+void        export_var(t_data *data, const char *input);
+void	    print_env(t_data *data);
+
 
 int         ft_strncmp(const char *s1, const char *s2, size_t n);
 char        *get_next_line(int fd);
@@ -83,15 +92,33 @@ void        ft_redirection_out_cmd(t_data *data, int pipefd[2]);        //Пер
 void        ft_redirection_out_pipe(t_data *data, int pipefd[2]);       //Переадресация из команды в пайп
 
 /*Блок для корректного выхода из процесса из за ошибок */
-void		free_fault_execve(char **strs, char *cmd, t_data *data);
+void	free_fault_execve(char *cmd, t_data *data);
 void		ft_free_strs(char **strs);
 void		ft_error_exit(int nb);
 void		free_pipe(int fd);
 void	    error_join_arg(t_data *data);
 void		error_empty_cmd(t_data *data);
 void		free_error_cmd(t_data *data);
-void		error_open_outfile(int flag);
+void	    error_open_outfile(int flag , t_data *data);
 
 
-void	free_data(t_data *data);
+void	free_data(t_data *data); //Этой функции больше нет? 
+
+
+//Сигналы
+void    handle_sigint(int sig);
+
+//Наши функции 
+void	execute_builtin_command(t_data *data);
+void	echo(t_data *data);
+int	    check_option_n(char *arg);
+void	exit_total(t_data *data);
+void	pwd(t_data *data);
+
+void	close_input(t_data *data);//Закрываем переадресацию на вход для наших функций 
+
+//void	error_open_outfile(int flag);//Проверить нужен ли ?
+
+void    free_all_data(t_data *data);
+void	free_data_cmd(t_data *data);
 #endif

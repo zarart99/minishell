@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/10/26 01:33:55 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/13 05:05:49 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-extern char	**environ;
+int g_pid;
 
 void	print_commands(t_data *data)
 {
@@ -61,11 +61,42 @@ void	print_commands(t_data *data)
 	}
 }
 
-void	free_data(t_data *data)
+
+char **copy_envp(char **envp)
+{
+	int		i;
+	int		count;
+	char	**new_envp;
+
+	count = 0;
+	while (envp[count] != NULL)
+		count++;
+	new_envp = malloc(sizeof(char *) * (count + 1));
+	if (!new_envp)
+		return (NULL);
+	i = 0;
+	while (i < count)
+	{
+		new_envp[i] = ft_strdup(envp[i]); // Дублирую каждую строку
+		if (!new_envp[i])
+		{
+			while (--i >= 0)
+				free(new_envp[i]);
+			free(new_envp);
+			return (NULL);
+		}
+		i++;
+	}
+	new_envp[count] = NULL;
+	return (new_envp);
+}
+
+void	free_data_cmd(t_data *data)
 {
 	int	i;
 	int	j;
 
+	// Освобождаем каждую команду в data->cmd
 	i = 0;
 	while (data->cmd[i] != NULL)
 	{
@@ -93,39 +124,78 @@ void	free_data(t_data *data)
 		i++;
 	}
 	free(data->cmd);
-	free(data);
+	data->cmd = NULL;
+}
+void	free_envp(t_data *data)
+{
+	int i;
+
+	i = 0;
+	while (data->envp[i] != NULL)
+	{
+		free(data->envp[i]);
+		i++;
+	}
+	free(data->envp);
+	data->envp = NULL;
+
+}
+
+void	free_all_data(t_data *data)
+{
+	if (data)
+	{
+		if (data->cmd != NULL)
+			free_data_cmd(data);    // Освобождаем команды и связанные строки
+		if (data->envp != NULL)
+			free_envp(data);    // Освобождаем переменные окружения
+		if (data->user_input != NULL) 
+			free(data->user_input);
+		free(data);             // Освобождаем структуру data
+	}
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	char	*user_input;
 	t_data	*data;
-
-	(void)argc;
+	int exit_status;
+	
 	(void)argv;
+	if (argc > 2) //Проверка на количество аргументов
+	{
+		write(2, "Too many arguments\n", 19);
+		return (1);
+	}
+	exit_status = 0;
+	g_pid = -1; //-1 == родительский процесс
+	signal(SIGINT, handle_sigint); //Функция которая обрабатывает сигнал ctrl c , во всех процессах
+	signal(SIGQUIT, SIG_IGN); //Функция которая обрабатывает сигнал ctrl '\' . В родительском процессе , игнорирует сигнал
+	data = malloc(sizeof(t_data));
+	if (!data)
+	{
+		perror("malloc failed");
+		return (1);
+	}
+	ft_memset(data, 0, sizeof(t_data));
+	data->envp = copy_envp(envp);	 //Считываем окружение , нужно для execve
 	while (1)
 	{
-		user_input = readline("minishell$ ");
-		if (!user_input)
+		data->user_input = readline("minishell$ ");
+		if (!data->user_input )
 			break ;
-		if (ft_strlen(user_input) > 0)
-			add_history(user_input);
-		data = malloc(sizeof(t_data));
-		if (!data)
-		{
-			perror("malloc failed");
-			return (1);
-		}
-		ft_memset(data, 0, sizeof(t_data));
-		data->envp = envp; //Считываем окружение , нужно для execve
-		parse_pipeline(data, user_input);
+		if (ft_strlen(data->user_input ) > 0)
+			add_history(data->user_input);
+		parse_pipeline(data, data->user_input);
+		data->exit_status = exit_status; //Перед запуском новой команды подгружаем статус старой команды
 		print_commands(data);    // Вывод команд для дебага
 		printf("\n---------\n"); //Отделяем вывод команды от дебага
 		choice_execution(data);
 		printf("status %i\n", data->exit_status);
-		free_data(data);
-		free(user_input);
+		exit_status = data->exit_status; //Сохраняем статус завершения команды перед освобождением
+		free_data_cmd(data);
+		free(data->user_input);
 	}
+	free_all_data(data);
 	rl_clear_history();
 	return (0);
 }
