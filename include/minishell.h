@@ -113,7 +113,7 @@ void	execute_builtin_command(t_data *data);
 void	echo(t_data *data);
 int	    check_option_n(char *arg);
 void	exit_total(t_data *data);
-
+void	pwd(t_data *data);
 
 void	close_input(t_data *data);//Закрываем переадресацию на вход для наших функций 
 

@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 04:50:13 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/13 06:24:06 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/13 22:10:28 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,4 +26,6 @@ void	execute_builtin_command(t_data *data)
         unset_var(data, args[1]); // Удаляем переменную
     else if (ft_strcmp(args[0], "env") == 0)
 		print_env(data);
+	else if (ft_strcmp(args[0], "pwd") == 0)
+		pwd(data);
 }

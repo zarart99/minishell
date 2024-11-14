@@ -14,6 +14,7 @@ SRCS = src/main.c\
 		src/builtin/exec_builtin.c\
 		src/builtin/echo.c\
 		src/builtin/exit.c\
+		src/builtin/pwd.c\
 		src/envp_functions/env_var_parser.c \
 		src/envp_functions/export_var.c \
 		src/envp_functions/print_envp.c \

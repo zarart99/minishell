@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 02:23:35 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/13 09:18:07 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/13 22:14:17 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ void	echo(t_data *data)
 		else//Если в одиночной команде то просто возвращаемся в main
 		{
 			data->back_in_main = 1;
+			data->exit_status = 0;
 			return ;
 		}
 	}
@@ -79,6 +80,7 @@ void	echo(t_data *data)
 		else
 		{
 			data->back_in_main = 1;
+			data->exit_status = 0;
 			return ;
 		}
 	}
@@ -100,6 +102,7 @@ void	echo(t_data *data)
 	else
 	{
 		data->back_in_main = 1;
+		data->exit_status = 0;
 		return ;
 	}
 }
