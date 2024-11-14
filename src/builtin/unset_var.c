@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset_var.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 00:06:56 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/14 21:06:35 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/15 01:30:28 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,5 +64,5 @@ void	unset_var(t_data *data, char *key)
 		}
 		i++;
 	}
-	unset_exit(data, 1);
+	unset_exit(data, 0);
 }
