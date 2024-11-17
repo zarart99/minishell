@@ -6,64 +6,65 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:53:45 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/13 09:24:04 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/17 17:31:05 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-
-void	execution_here_doc(t_data *data)
+void	read_line_here_doc(t_data *data, int pipefd)
 {
 	char	*line;
-	int		pipefd[2];
-	int		in;
+	char	*lim;
 
-	line = NULL;
-	g_pid = -5; //Показываем обработчику SIGINT что мы в HEREDOC
-	data->heredoc_interrupted = 0; //Костыль который помогает понять что мы выйшли из функции по ошибке//Сигналу
-	if (pipe(pipefd) == -1)
-	{
-		perror("ERROR in here doc");
-		return ;
-	}
-	in = dup(0);//Дублируем стандратный ввод в переменную так как мы в процессе получения сигнала закроем fd стандратного входа и нам его нужно будет востановить потом
+	lim = data->cmd[data->i]->here_doc_file;
 	write(1, "> ", 2);
 	line = get_next_line(0);
 	while (line != NULL)
 	{
-		
-		if (ft_strncmp(data->cmd[data->i]->here_doc_file, line, ft_strlen(line) - 1) == 0 && line[0] != '\n')
+		if (ft_strncmp(line, lim, ft_strlen(lim)) == 0 && line[ft_strlen(lim)] == '\n' && line[0] != '\n')
 		{
 			free(line);
 			break ;
 		}
-		write(pipefd[1], line, ft_strlen(line));
-		free(line);
-		write(1, "> ", 2);
-		line = get_next_line(0);
-	}
-	if (g_pid == -10) //Если мы вышли из цикла из за обработчика сигнала SIGINT то входим в это условие 
-	{
-		close(pipefd[1]); //Закрываем канал записи
-		free_pipe(pipefd[0]); //Освобождаем пайп если что то записали в него
-        close(pipefd[0]); // Закрываем канал чтения
-		if (dup2(in, 0) == -1) //Востанавливаем стандартный вход
+		else
 		{
-        	perror("dup2 failed");
-        	close(in);
-       		exit(1);
-    	}
-		close(in); //Закрываем fd который времено хранил указатель на стандартный вход
-		g_pid = -1; //Возвращаем в глобальную переменную значение которое указывает что мы в родительском процессе
-		data->exit_status = 130; //Обнавляем статус закрытия команды
+			write(pipefd, line, ft_strlen(line));
+			free(line);
+			write(1, "> ", 2);
+			line = get_next_line(0);
+		}
+	}
+	if (line == NULL && g_pid != -10)
+		ft_printf("\nwarning: here-document delimited by end-of-file (wanted '%s')\n", lim);
+}
+
+void	execution_here_doc(t_data *data)
+{
+	int		pipefd[2];
+	int		in;
+	
+	g_pid = -5;
+	if (pipe(pipefd) == -1)
+		return ;
+	in = dup(0);
+	read_line_here_doc(data, pipefd[1]);
+	if (g_pid == -10)
+	{
+		sigint_heredoc(data, pipefd, in);
         return; 
     }
 	close(pipefd[1]);
 	close(in);
-	data->here_doc_pfd = pipefd[0];//А не должен ли я закрыть этот канал pipefd[0] ?
-	data->heredoc_interrupted = 1; //Значение указывает что мы корректно отработали в here doc и можно переходить к запуску дочерних процессов
+	data->here_doc_pfd = pipefd[0];
 	g_pid = -1;
+	if (data->cmd[data->i]->cmd == NULL)//Если команды не существует
+	{
+		free_pipe(data->here_doc_pfd);//Освобождаем данные из пайпа
+		close(data->here_doc_pfd);//Закрываем канал чтения
+		data->heredoc_interrupted = 1;//Ставим флаг для возвращения в майн
+		data->exit_status = 0;
+	}
 }
 
 void	redirection_input(t_data *data, int pipefd[2])
@@ -147,7 +148,7 @@ void	execution_cmd(t_data *data)
 		if (data->cmd[data->i]->here_doc_file != NULL)
 		{
 			execution_here_doc(data);
-			if (data->heredoc_interrupted != 1)//Если значение 0 значит работа here doc завершилась не корректно и нам нужно обратно в главный цикл
+			if (data->heredoc_interrupted != 0)//Если значение 0 значит работа here doc завершилась не корректно и нам нужно обратно в главный цикл
 				return ;
 			if (data->here_doc_pfd == -1)
 				write(2, "ERROR in here_doc\n", 18);

@@ -121,4 +121,6 @@ void	close_input(t_data *data);//Закрываем переадресацию �
 
 void    free_all_data(t_data *data);
 void	free_data_cmd(t_data *data);
+
+void sigint_heredoc(t_data *data, int pipefd[2], int in);
 #endif

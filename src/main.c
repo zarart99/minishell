@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/13 05:05:49 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/15 03:35:38 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,10 @@ int	main(int argc, char **argv, char **envp)
 	{
 		data->user_input = readline("minishell$ ");
 		if (!data->user_input )
+		{
+			ft_printf("exit\n");
 			break ;
+		}
 		if (ft_strlen(data->user_input ) > 0)
 			add_history(data->user_input);
 		parse_pipeline(data, data->user_input);

@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 04:07:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/13 09:25:55 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/17 17:05:28 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,3 +46,19 @@ void	error_open_outfile(int flag , t_data *data)
 	exit (1);
 }
 
+void sigint_heredoc(t_data *data, int pipefd[2], int in)
+{
+	close(pipefd[1]);
+	free_pipe(pipefd[0]);
+    close(pipefd[0]);
+	if (dup2(in, 0) == -1)
+	{
+    	perror("dup2 in here doc failed");
+    	close(in);
+       	exit(1);
+    }
+	close(in);
+	data->heredoc_interrupted = 1;
+	g_pid = -1;
+	data->exit_status = 130;
+}
