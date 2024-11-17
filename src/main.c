@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/13 05:05:49 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/18 00:37:14 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,6 +189,11 @@ int	main(int argc, char **argv, char **envp)
 		data->exit_status = exit_status; //Перед запуском новой команды подгружаем статус старой команды
 		print_commands(data);    // Вывод команд для дебага
 		printf("\n---------\n"); //Отделяем вывод команды от дебага
+		if (!data->cmd)
+   		{
+        	free(data->user_input);
+       		 continue; // Пропускаем выполнение команды
+  		}
 		choice_execution(data);
 		printf("status %i\n", data->exit_status);
 		exit_status = data->exit_status; //Сохраняем статус завершения команды перед освобождением

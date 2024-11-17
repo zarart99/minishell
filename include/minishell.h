@@ -50,7 +50,7 @@ void		free_parsed_commands(t_data **commands);
 char		*find_command(char *cmd, char **envp);
 void		free_split(char **args);
 void		error_exit(const char *message);
-char		**ft_split_quotes(const char *input);
+char        **ft_split_quotes(const char *input, t_data *data);
 void		free_structure(t_data *command);
 
 // Функции для работы с переменными окружения
