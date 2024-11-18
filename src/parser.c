@@ -120,6 +120,7 @@ void	parse_pipeline(t_data *data, char *input)
 
     if (!validate_quotes(input))     // Проверяем наличие незакрытых кавычек
     {
+		data->back_in_main = 1;
         ft_printf("Error: unclosed quotes\n");
         return ;
     }
