@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 00:06:31 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/10 19:18:01 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/18 00:36:07 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,16 +111,22 @@ char	*replace_env_var(char *input, t_data *data)
 	char	*result;
 	int		i;
 
-	i = 0;
-	result = ft_strdup(input);
-	if (!result)
-		return (NULL);
-	while (result[i] != '\0')
-	{
-		if (result[i] == '$')
-			result = process_variable(result, &i, data);
-		else
-			i++;
-	}
+    i = 0;
+    result = ft_strdup(input);
+    if (!result)
+        return (NULL);
+    while (result[i] != '\0')
+    {
+        if (result[i] == '\\')  // Если найден символ `\`
+        {
+            i++;  // Пропускаем его
+            continue;
+        }
+        if (result[i] == '$')  // Обрабатываем переменные окружения
+            result = process_variable(result, &i, data);
+        else
+            i++;
+    }
 	return (result);
 }
+

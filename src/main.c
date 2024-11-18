@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/15 03:35:38 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/18 04:03:17 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,12 +120,18 @@ void	free_data_cmd(t_data *data)
 			free(data->cmd[i]->output_file);
 		if (data->cmd[i]->append_file)
 			free(data->cmd[i]->append_file);
+		if (data->cmd[i]->here_doc_pfd != 0 )//Закрываем канал чтения из here doc
+		{
+			close(data->cmd[i]->here_doc_pfd);
+			data->cmd[i]->here_doc_pfd = 0;
+		}
 		free(data->cmd[i]);
 		i++;
 	}
 	free(data->cmd);
 	data->cmd = NULL;
 }
+
 void	free_envp(t_data *data)
 {
 	int i;
@@ -188,10 +194,22 @@ int	main(int argc, char **argv, char **envp)
 		}
 		if (ft_strlen(data->user_input ) > 0)
 			add_history(data->user_input);
+		data->back_in_main = 0;
 		parse_pipeline(data, data->user_input);
-		data->exit_status = exit_status; //Перед запуском новой команды подгружаем статус старой команды
+		 //Перед запуском новой команды подгружаем статус старой команды
+		if (data->back_in_main == 1)
+   		{
+			exit_status = data->exit_status;
+//			printf("status after return in main with fault %i\n", data->exit_status);
+			free_data_cmd(data);
+			free(data->user_input);
+			printf("status after return in main with fault %i\n", data->exit_status);
+       		continue; // Пропускаем выполнение команды
+  		}
+		data->exit_status = exit_status;
 		print_commands(data);    // Вывод команд для дебага
 		printf("\n---------\n"); //Отделяем вывод команды от дебага
+
 		choice_execution(data);
 		printf("status %i\n", data->exit_status);
 		exit_status = data->exit_status; //Сохраняем статус завершения команды перед освобождением
