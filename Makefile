@@ -18,7 +18,8 @@ SRCS = src/main.c\
 		src/builtin/env_var_parser.c \
 		src/builtin/export_var.c \
 		src/builtin/print_envp.c \
-		src/builtin/unset_var.c 
+		src/builtin/unset_var.c \
+		src/parcer_utils.c \
 
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a

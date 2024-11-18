@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 00:47:25 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/13 09:27:33 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/18 03:24:39 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,11 @@ void ft_redirection_in(t_data *data, int pipefd[2])
         free_pipe(data->prev_pipe);
 		close(data->prev_pipe);
     }
-    if(data->here_doc_pfd != -1)
+    if(data->cmd[data->i]->here_doc_pfd != 0)
     {
-        free_pipe(data->here_doc_pfd);
-		close(data->here_doc_pfd);
+        free_pipe(data->cmd[data->i]->here_doc_pfd);
+		close(data->cmd[data->i]->here_doc_pfd);
+        data->cmd[data->i]->here_doc_pfd = 0;
     }
     if (data->i != data->nb_pipe)
         close(pipefd[0]);
@@ -69,8 +70,9 @@ void	ft_redirection_here_doc(t_data *data, int pipefd[2])
         if (fd_in == -1)
         {
             perror("Error opening input file:");
-            free_pipe(data->here_doc_pfd);
-		    close(data->here_doc_pfd);
+            free_pipe(data->cmd[data->i]->here_doc_pfd);
+		    close(data->cmd[data->i]->here_doc_pfd);
+            data->cmd[data->i]->here_doc_pfd = 0;
             if (data->i != data->nb_pipe)
                 close(pipefd[1]);
             free_all_data(data);
@@ -78,17 +80,19 @@ void	ft_redirection_here_doc(t_data *data, int pipefd[2])
         }
         close(fd_in);
     }
-	if (dup2(data->here_doc_pfd, STDIN_FILENO) == -1)
+	if (dup2(data->cmd[data->i]->here_doc_pfd, STDIN_FILENO) == -1)
 	{
 		perror("Error: dup2 prev_pipe");
-		free_pipe(data->here_doc_pfd);
-		close(data->here_doc_pfd);
+		free_pipe(data->cmd[data->i]->here_doc_pfd);
+		close(data->cmd[data->i]->here_doc_pfd);
+        data->cmd[data->i]->here_doc_pfd = 0;
         if (data->i != data->nb_pipe)
             close(pipefd[1]);
         free_all_data(data);
 		exit (EXIT_FAILURE);
 	}
-	close(data->here_doc_pfd);
+	close(data->cmd[data->i]->here_doc_pfd);
+    data->cmd[data->i]->here_doc_pfd = 0;
     data->flag_pipe = 1;
 }
 

@@ -24,6 +24,7 @@ typedef struct s_cmd
     char *append_file;    // Для ">>"
     int pos_output;       // Позиция для приоритета вывода
     int pos_append;       // Позиция для приоритета append
+    int here_doc_pfd; // канал для чтения данных принятых here_doc ,    
 } t_cmd;
 
 typedef struct s_data
@@ -32,12 +33,11 @@ typedef struct s_data
     t_cmd **cmd;      // Массив структур команд
     int nb_pipe;      // Количество пайпов
     int prev_pipe;    // Флаг пайпа для предыдущей команды
-    int i;            //Индекс текущей команды
-    int here_doc_pfd; // канал для чтения данных принятых here_doc ,                                       //add
+    int i;            //Индекс текущей команды                                   //add
     int flag_pipe;    //Что бы определить если заполненый пайп                                      //add
     int exit_status;  //Сохраняем индекс последнего процесса запущеной команды
 
-    int heredoc_interrupted; //ДЛя входа из here doc 
+    int heredoc_interrupted; //Для входа из here doc 
     int back_in_main;        //Для возврата в main после исполнения наших одиночных команд
     char *user_input;     // Что вводит пользователь
 
@@ -50,7 +50,7 @@ void		free_parsed_commands(t_data **commands);
 char		*find_command(char *cmd, char **envp);
 void		free_split(char **args);
 void		error_exit(const char *message);
-char		**ft_split_quotes(const char *input);
+char        **ft_split_quotes(const char *input, t_data *data);
 void		free_structure(t_data *command);
 
 // Функции для работы с переменными окружения
@@ -80,7 +80,9 @@ void		ft_launch_cmd(t_data *data, int pipefd[2]);                 //Запуск
 void	    wait_processes(t_data *data);                               //Ожидание последнего дочернего процесса + сохраняем статус последнего 
 char        **join_arg(t_data *data);                                   //Объединяем имя команды , аргумент , + NULL требуется для execve
 //void		ft_launch_here_doc(t_data *data);
-void		execution_here_doc(t_data *data);                           //Если есть here_doc то это функция которая его исполняет
+void	    execution_here_doc(t_cmd *cmd, t_data *data);                          //Если есть here_doc то это функция которая его исполняет
+void	    read_line_here_doc(t_cmd *cmd, int pipefd);
+
 
 void        redirection_input(t_data *data, int pipefd[2]);             //Функция определяет какой из 4 вариантов input нужно задействовать для текущей команды
 void        redirection_output(t_data *data, int pipefd[2]);            //Функция определяет какой из 4 вариантов output нужно задействовать для текущей команды
@@ -121,4 +123,6 @@ void	close_input(t_data *data);//Закрываем переадресацию �
 
 void    free_all_data(t_data *data);
 void	free_data_cmd(t_data *data);
+
+void sigint_heredoc(t_data *data, int pipefd[2], int in);
 #endif
