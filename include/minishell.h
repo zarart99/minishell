@@ -25,6 +25,10 @@ typedef struct s_cmd
     int pos_output;       // Позиция для приоритета вывода
     int pos_append;       // Позиция для приоритета append
     int here_doc_pfd; // канал для чтения данных принятых here_doc ,    
+    char **output_files;    // Массив для ">"
+    char **append_files;    // Массив для ">>" 
+    char **here_doc_files;  // Массив для "<<"
+    char **input_files;     // Массив для "<"
 } t_cmd;
 
 typedef struct s_data

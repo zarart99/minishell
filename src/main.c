@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/19 23:48:39 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/20 00:47:17 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,52 +14,106 @@
 
 int g_pid;
 
-void	print_commands(t_data *data)
+void print_commands(t_data *data)
 {
-	int	i;
-	int	j;
+    int i;
+    int j;
 
-	i = 0;
-	while (data->cmd[i] != NULL)
-	{
-		ft_printf("Command[%d]:\n", i);
-		if (data->cmd[i]->cmd)
-			ft_printf("  cmd: %s\n",
-				data->cmd[i]->cmd ? data->cmd[i]->cmd : "(null)");
-		if (data->cmd[i]->cmd_arg)
-		{
-			j = 0;
-			while (data->cmd[i]->cmd_arg[j] != NULL)
-			{
-				ft_printf("  cmd_arg[%d]: %s\n", j, data->cmd[i]->cmd_arg[j]);
-				j++;
-			}
-		}
-		else
-			ft_printf("  cmd_arg: (null)\n");
-		if (data->cmd[i]->input_file)
-			ft_printf("  input_file: %s (pos_input: %d)\n",
-				data->cmd[i]->input_file, data->cmd[i]->pos_input);
-		else
-			ft_printf("  input_file: (null)\n");
-		if (data->cmd[i]->here_doc_file)
-			ft_printf("  here_doc_file: %s (pos_here_doc: %d)\n",
-				data->cmd[i]->here_doc_file, data->cmd[i]->pos_here_doc);
-		else
-			ft_printf("  here_doc_file: (null)\n");
-		if (data->cmd[i]->output_file)
-			ft_printf("  output_file: %s (pos_output: %d)\n",
-				data->cmd[i]->output_file, data->cmd[i]->pos_output);
-		else
-			ft_printf("  output_file: (null)\n");
-		if (data->cmd[i]->append_file)
-			ft_printf("  append_file: %s (pos_append: %d)\n",
-				data->cmd[i]->append_file, data->cmd[i]->pos_append);
-		else
-			ft_printf("  append_file: (null)\n");
-		i++;
-	}
+    i = 0;
+    while (data->cmd[i] != NULL)
+    {
+        ft_printf("Command[%d]:\n", i);
+
+        if (data->cmd[i]->cmd)
+            ft_printf("  cmd: %s\n",
+                data->cmd[i]->cmd ? data->cmd[i]->cmd : "(null)");
+
+        if (data->cmd[i]->cmd_arg)
+        {
+            j = 0;
+            while (data->cmd[i]->cmd_arg[j] != NULL)
+            {
+                ft_printf("  cmd_arg[%d]: %s\n", j, data->cmd[i]->cmd_arg[j]);
+                j++;
+            }
+        }
+        else
+            ft_printf("  cmd_arg: (null)\n");
+
+        // Final input, output, append, and here_doc files
+        if (data->cmd[i]->input_file)
+            ft_printf("  final_input: %s\n", data->cmd[i]->input_file);
+        else
+            ft_printf("  final_input: (null)\n");
+
+        if (data->cmd[i]->output_file)
+            ft_printf("  final_output: %s\n", data->cmd[i]->output_file);
+        else
+            ft_printf("  final_output: (null)\n");
+
+        if (data->cmd[i]->append_file)
+            ft_printf("  final_append_file: %s\n", data->cmd[i]->append_file);
+        else
+            ft_printf("  final_append_file: (null)\n");
+
+        if (data->cmd[i]->here_doc_file)
+            ft_printf("  final_here_doc_file: %s\n", data->cmd[i]->here_doc_file);
+        else
+            ft_printf("  final_here_doc_file: (null)\n");
+
+        // Print arrays of files
+        if (data->cmd[i]->input_files)
+        {
+            j = 0;
+            while (data->cmd[i]->input_files[j] != NULL)
+            {
+                ft_printf("  input_files[%d]: %s\n", j, data->cmd[i]->input_files[j]);
+                j++;
+            }
+        }
+        else
+            ft_printf("  input_files: (null)\n");
+
+        if (data->cmd[i]->output_files)
+        {
+            j = 0;
+            while (data->cmd[i]->output_files[j] != NULL)
+            {
+                ft_printf("  output_files[%d]: %s\n", j, data->cmd[i]->output_files[j]);
+                j++;
+            }
+        }
+        else
+            ft_printf("  output_files: (null)\n");
+
+        if (data->cmd[i]->append_files)
+        {
+            j = 0;
+            while (data->cmd[i]->append_files[j] != NULL)
+            {
+                ft_printf("  append_files[%d]: %s\n", j, data->cmd[i]->append_files[j]);
+                j++;
+            }
+        }
+        else
+            ft_printf("  append_files: (null)\n");
+
+        if (data->cmd[i]->here_doc_files)
+        {
+            j = 0;
+            while (data->cmd[i]->here_doc_files[j] != NULL)
+            {
+                ft_printf("  here_doc_files[%d]: %s\n", j, data->cmd[i]->here_doc_files[j]);
+                j++;
+            }
+        }
+        else
+            ft_printf("  here_doc_files: (null)\n");
+
+        i++;
+    }
 }
+
 
 char	**copy_envp(char **envp)
 {
@@ -89,6 +143,22 @@ char	**copy_envp(char **envp)
 	new_envp[count] = NULL;
 	return (new_envp);
 }
+
+void free_cmd_files(t_cmd *cmd)
+{
+    if (cmd->input_files)
+        free_split(cmd->input_files);
+
+    if (cmd->output_files)
+        free_split(cmd->output_files);
+
+    if (cmd->append_files)
+        free_split(cmd->append_files);
+
+    if (cmd->here_doc_files)
+        free_split(cmd->here_doc_files);
+}
+
 
 void	free_data_cmd(t_data *data)
 {
@@ -127,6 +197,7 @@ void	free_data_cmd(t_data *data)
 				close(data->cmd[i]->here_doc_pfd);
 				data->cmd[i]->here_doc_pfd = 0;
 			}
+			free_cmd_files(data->cmd[i]);
 			free(data->cmd[i]);
 			i++;
 		}
@@ -208,7 +279,7 @@ int	main(int argc, char **argv, char **envp)
 			continue ; // Пропускаем выполнение команды
 		}
 		data->exit_status = exit_status;
-		//print_commands(data);    // Вывод команд для дебага
+		print_commands(data);    // Вывод команд для дебага
 		//printf("\n---------\n"); //Отделяем вывод команды от дебага
 		choice_execution(data);
 		// printf("status %i\n", data->exit_status);
