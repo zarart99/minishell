@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/19 01:42:13 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/19 23:48:39 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,8 +208,8 @@ int	main(int argc, char **argv, char **envp)
 			continue ; // Пропускаем выполнение команды
 		}
 		data->exit_status = exit_status;
-		print_commands(data);    // Вывод команд для дебага
-		printf("\n---------\n"); //Отделяем вывод команды от дебага
+		//print_commands(data);    // Вывод команд для дебага
+		//printf("\n---------\n"); //Отделяем вывод команды от дебага
 		choice_execution(data);
 		// printf("status %i\n", data->exit_status);
 		exit_status = data->exit_status;	//Сохраняем статус завершения команды перед освобождением

@@ -45,3 +45,20 @@ expected: Error: unclosed quotes
 # Test 12: Error: unclosed quotes "
 input: echo "hello 
 expected: Error: unclosed quotes
+
+# Test 13: Print envp varuables
+input: echo $HOME and $USER is gay
+expected: /home/artemii and artemii is gay
+
+# Test 14: Print $?
+input: echo $?
+expected: 0
+
+# Test 15: Print $? in '' quotes
+input: echo '$?'
+expected: $?
+
+# Test 16: Print $? in "" quotes
+input: echo "$?"
+expected: 0
+

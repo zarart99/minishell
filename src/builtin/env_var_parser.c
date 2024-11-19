@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 00:06:31 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/18 00:36:07 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/20 00:15:47 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ char	*replace_env_var(char *input, t_data *data)
 {
 	char	*result;
 	int		i;
+	char *status;
 
     i = 0;
     result = ft_strdup(input);
@@ -123,7 +124,16 @@ char	*replace_env_var(char *input, t_data *data)
             continue;
         }
         if (result[i] == '$')  // Обрабатываем переменные окружения
-            result = process_variable(result, &i, data);
+         {   
+			if (result[i + 1] == '?') // Проверяем на `$?`
+            {
+                status = ft_itoa(data->exit_status); // Конвертируем exit_status в строку
+                result = replace_substring(result, i, i + 2, status); // Заменяем `$?` на статус
+                free(status);
+            }
+            else
+                result = process_variable(result, &i, data); // Стандартная обработка переменных
+			}
         else
             i++;
     }

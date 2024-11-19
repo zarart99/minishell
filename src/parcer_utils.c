@@ -56,25 +56,38 @@ static char	*handle_quotes(const char *str, int *i, t_data *data, char *result)
 }
 
 // Для подстановки переменной
-static char	*handle_variable(const char *str, int *i, t_data *data,
-		char *result)
+static char *handle_variable(const char *str, int *i, t_data *data, char *result)
 {
-	int		start;
-	char	*var;
-	char	*expanded;
+    int start = *i;
+    char *var = NULL;
+    char *expanded = NULL;
 
-	start = (*i)++;
-	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
-		(*i)++;
+    (*i)++; // Пропускаем символ '$'
+
+    // Проверяем, если следующий символ '?'
+    if (str[*i] == '?')
+    {
+        (*i)++; // Пропускаем символ '?'
+        expanded = ft_itoa(data->exit_status); //Кладём статус
+    }
+    else
+    {
+        // Извлекаем имя переменной
+        while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
+            (*i)++;
 	var = ft_strndup(str + start, *i - start);
-	expanded = replace_env_var(var, data);
-	free(var);
-	if (result == NULL)
-		result = expanded;
-	else
-		result = merge_tokens(result, expanded);
-	return (result);
+        expanded = replace_env_var(var, data);
+        free(var);
+    }
+
+    if (result == NULL)
+        result = expanded;
+    else
+        result = merge_tokens(result, expanded);
+
+    return result;
 }
+
 
 // Удаляет бэкслэш
 static char	*handle_backslash(const char *str, int *i, char *result)
