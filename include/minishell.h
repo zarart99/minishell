@@ -59,6 +59,10 @@ char	    *replace_substring(char *str, int start, int end, char *replacement);
 void        unset_var(t_data *data, char *key);
 void        export_var(t_data *data, const char *input);
 void	    print_env(t_data *data);
+void        cd(t_data *data, char *args);
+char	    *get_env_value(char *name, t_data *data);
+
+
 
 
 int         ft_strncmp(const char *s1, const char *s2, size_t n);

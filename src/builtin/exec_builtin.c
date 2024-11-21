@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_builtin.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 04:50:13 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/18 01:12:56 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/21 22:29:44 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,16 @@ void	execute_builtin_command(t_data *data)
 			print_env(data);
 		else if (ft_strcmp(args[0], "pwd") == 0)
 			pwd(data);
+		else if (ft_strcmp(args[0], "cd") == 0)
+		{
+			if (args[2] != NULL) // Проверяем наличие лишних аргументов
+			{
+				ft_printf("cd: too many arguments\n");
+				data->back_in_main = 1;
+				data->exit_status = 1;
+				return ;
+			}
+			cd(data, args[1]);
+		}
 	}
 }

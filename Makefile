@@ -19,6 +19,7 @@ SRCS = src/main.c\
 		src/builtin/export_var.c \
 		src/builtin/print_envp.c \
 		src/builtin/unset_var.c \
+		src/builtin/cd.c \
 		src/parcer_utils.c \
 
 OBJS = $(SRCS:.c=.o)
