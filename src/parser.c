@@ -13,6 +13,28 @@ void	free_split(char **args)
 	free(args);
 }
 
+char **realloc_array(char **array, char *new_element)
+{
+    int size = 0;
+    char **new_array;
+
+    if (array)
+        while (array[size])
+            size++;
+    new_array = malloc(sizeof(char *) * (size + 2)); // +1 для нового элемента, +1 для NULL
+    if (!new_array)
+    {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < size; i++)
+        new_array[i] = array[i];
+    new_array[size] = new_element;
+    new_array[size + 1] = NULL;
+    free(array); // Освобождаем старый массив
+    return new_array;
+}
+
 // Обработка редиректов и установка позиций
 void	handle_redirection(t_cmd *cmd, char **tokens, int *i,
 		int *redir_position)
@@ -22,24 +44,29 @@ void	handle_redirection(t_cmd *cmd, char **tokens, int *i,
 		*i += 1;
 		cmd->input_file = ft_strdup(tokens[*i]);
 		cmd->pos_input = (*redir_position)++;
+		cmd->input_files = realloc_array(cmd->input_files, ft_strdup(tokens[*i]));
+
 	}
 	else if (ft_strcmp(tokens[*i], ">") == 0)
 	{
 		*i += 1;
 		cmd->output_file = ft_strdup(tokens[*i]);
 		cmd->pos_output = (*redir_position)++;
+		cmd->output_files = realloc_array(cmd->output_files, ft_strdup(tokens[*i]));
 	}
 	else if (ft_strcmp(tokens[*i], ">>") == 0)
 	{
 		*i += 1;
 		cmd->append_file = ft_strdup(tokens[*i]);
 		cmd->pos_append = (*redir_position)++;
+		cmd->append_files = realloc_array(cmd->append_files, ft_strdup(tokens[*i]));
 	}
 	else if (ft_strcmp(tokens[*i], "<<") == 0)
 	{
 		*i += 1;
 		cmd->here_doc_file = ft_strdup(tokens[*i]);
 		cmd->pos_here_doc = (*redir_position)++;
+		cmd->here_doc_files = realloc_array(cmd->here_doc_files, ft_strdup(tokens[*i]));
 	}
 }
 
