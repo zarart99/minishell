@@ -66,6 +66,10 @@ char	    *replace_substring(char *str, int start, int end, char *replacement);
 void        unset_var(t_data *data, char *key);
 void        export_var(t_data *data, const char *input);
 void	    print_env(t_data *data);
+void        cd(t_data *data, char *args);
+char	    *get_env_value(char *name, t_data *data);
+
+
 
 
 int         ft_strncmp(const char *s1, const char *s2, size_t n);
@@ -87,9 +91,8 @@ void	    ft_launch_cmd(t_data *data);                 //Запускает ис�
 void	    wait_processes(t_data *data);                               //Ожидание последнего дочернего процесса + сохраняем статус последнего 
 char        **join_arg(t_data *data);                                   //Объединяем имя команды , аргумент , + NULL требуется для execve
 //void		ft_launch_here_doc(t_data *data);
-void	    execution_here_doc(t_cmd *cmd, t_data *data);                          //Если есть here_doc то это функция которая его исполняет
-void	    read_line_here_doc(t_cmd *cmd, int pipefd);
-
+void	execution_here_doc(t_cmd *cmd, char *here_doc_file, t_data *data);                          //Если есть here_doc то это функция которая его исполняет
+void	read_line_here_doc(char *here_doc_file, int pipefd);
 
 void        redirection(t_data *data);            //Функция определяет какой из 4 вариантов output нужно задействовать для текущей команды
 

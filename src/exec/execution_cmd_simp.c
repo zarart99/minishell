@@ -6,18 +6,18 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:53:45 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/22 03:56:47 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/22 06:32:21 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void	read_line_here_doc(t_cmd *cmd, int pipefd)
+void	read_line_here_doc(char *here_doc_file, int pipefd)
 {
 	char	*line;
 	char	*lim;
 
-	lim = cmd->here_doc_file;
+	lim = here_doc_file;
 	write(1, "> ", 2);
 	line = get_next_line(0);
 	while (line != NULL)
@@ -39,16 +39,22 @@ void	read_line_here_doc(t_cmd *cmd, int pipefd)
 		ft_printf("\nwarning: here-document delimited by end-of-file (wanted '%s')\n", lim);
 }
 
-void	execution_here_doc(t_cmd *cmd, t_data *data)
+void	execution_here_doc(t_cmd *cmd, char *here_doc_file, t_data *data)
 {
 	int		pipefd[2];
 	int		in;
 
 	g_pid = -5;
+	if (cmd->here_doc_pfd > 0)
+	{
+		free_pipe(cmd->here_doc_pfd);//Освобождаем данные из пайпа
+		close(cmd->here_doc_pfd);//Закрываем канал чтения
+		cmd->here_doc_pfd = 0;
+	}
 	if (pipe(pipefd) == -1)
 		return ;
 	in = dup(0);
-	read_line_here_doc(cmd, pipefd[1]);
+	read_line_here_doc(here_doc_file, pipefd[1]);
 	if (g_pid == -10)//Выход по сигналу SIGINT == CTRL C
 	{
 		sigint_heredoc(data, pipefd, in);
@@ -96,7 +102,6 @@ void	ft_launch_cmd(t_data *data)
 {
 	char	*cmd;
 
-	printf("in ft_launch_cmd \n");
 	redirection(data);
 	execute_builtin_command(data);
 	if (data->cmd[data->i]->cmd == NULL)//Если команды нет то выходим в родительский процесс
@@ -139,9 +144,7 @@ void	execution_cmd(t_data *data)
 	data->flag_pipe = 0;
 	if (data->nb_pipe == 0)
 	{
-		printf("befor execute_builtin_command in if\n");
 		execute_builtin_command(data);
-		printf("after execute_builtin_command in if\n");
 		if (data->back_in_main == 1)
 			return ;
 	}

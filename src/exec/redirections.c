@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 00:47:25 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/22 03:56:13 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/22 06:31:30 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,10 @@
 
 void ft_redirection_in(t_data *data)
 {
+    int i;
     int fd_in;
-    printf("ft_redirection_in \n");
+
+    i = 0;
     if(data->prev_pipe != -1)
     {
         free_pipe(data->prev_pipe);
@@ -29,6 +31,33 @@ void ft_redirection_in(t_data *data)
     }
     if (data->i != data->nb_pipe)
         close(data->pipefd[0]);
+    if (data->cmd[data->i]->input_file != NULL)
+    {
+        while (data->cmd[data->i]->input_files[i] != NULL)
+        {
+            fd_in = open(data->cmd[data->i]->input_files[i], O_RDONLY, 0644);
+            if (fd_in == -1)
+            {
+                perror("Error opening input file");
+                if (data->i != data->nb_pipe)
+                    close(data->pipefd[1]);
+                if (data->nb_pipe == 0 && data->builtin_cmd == 1)
+    	        {
+        		    data->back_in_main = 1;
+        		    data->exit_status = 1;
+        		    return ;
+        	    }
+        	    else
+        	    {
+         		    free_all_data(data);
+        		    rl_clear_history();
+        		    exit (EXIT_FAILURE) ;
+    	        }
+            }
+            close(fd_in);
+            i++;
+        }
+    }
     fd_in = open(data->cmd[data->i]->input_file, O_RDONLY, 0644);
     if (fd_in == -1)
     {
@@ -37,7 +66,6 @@ void ft_redirection_in(t_data *data)
             close(data->pipefd[1]);
         if (data->nb_pipe == 0 && data->builtin_cmd == 1)
 	    {
-            printf("ft_redirection_in in if return\n");
     		data->back_in_main = 1;
     		data->exit_status = 1;
     		return ;
@@ -53,7 +81,6 @@ void ft_redirection_in(t_data *data)
         close(fd_in);
     else
     {
-        printf("befor (dup2(fd_in, STDIN_FILENO))\n");
         if (dup2(fd_in, STDIN_FILENO) == -1)
         {
         perror("Error duplicating file descriptor for input");
@@ -72,8 +99,9 @@ void ft_redirection_in(t_data *data)
 void	ft_redirection_here_doc(t_data *data)
 {
     int fd_in;
-    
-    printf("in ft_redirection_here_doc\n");
+    int i;
+
+    i = 0;
     if(data->prev_pipe != -1)
     {
         free_pipe(data->prev_pipe);
@@ -85,30 +113,33 @@ void	ft_redirection_here_doc(t_data *data)
     }
     if (data->cmd[data->i]->input_file != NULL)
     {
-        fd_in = open(data->cmd[data->i]->input_file, O_RDONLY, 0644);
-        if (fd_in == -1)
+        while (data->cmd[data->i]->input_files[i] != NULL)
         {
-            perror("Error opening input file");
-            free_pipe(data->cmd[data->i]->here_doc_pfd);
-		    close(data->cmd[data->i]->here_doc_pfd);
-            data->cmd[data->i]->here_doc_pfd = 0;
-            if (data->i != data->nb_pipe)
-                close(data->pipefd[1]);
-            if (data->nb_pipe == 0 && data->builtin_cmd == 1)
-	        {
-                printf("ft_redirection_here_doc in if return\n");
-    		    data->back_in_main = 1;
-    		    data->exit_status = 1;
-    		    return ;
-    	    }
-    	    else
-    	    {
-           		free_all_data(data);
-        		rl_clear_history();
-                exit (EXIT_FAILURE) ;
-	        }
+            fd_in = open(data->cmd[data->i]->input_files[i], O_RDONLY, 0644);
+            if (fd_in == -1)
+            {
+                perror("Error opening input file");
+                free_pipe(data->cmd[data->i]->here_doc_pfd);
+		        close(data->cmd[data->i]->here_doc_pfd);
+                data->cmd[data->i]->here_doc_pfd = 0;
+                if (data->i != data->nb_pipe)
+                    close(data->pipefd[1]);
+                if (data->nb_pipe == 0 && data->builtin_cmd == 1)
+	            {
+    		        data->back_in_main = 1;
+    		        data->exit_status = 1;
+    		        return ;
+    	        }
+    	        else
+    	        {
+           	    	free_all_data(data);
+        	    	rl_clear_history();
+                    exit (EXIT_FAILURE) ;
+	            }
+            }
+            close(fd_in);
+            i++;
         }
-        close(fd_in);
     }
     if (data->nb_pipe == 0 && data->builtin_cmd == 1)
     {
@@ -118,7 +149,6 @@ void	ft_redirection_here_doc(t_data *data)
     }
     else
     {
-        printf("befor dup2(data->cmd[data->i]->here_doc_pfd, STDIN_FILENO) // data->builtin_cmd == %i\n", data->builtin_cmd);
 	    if (dup2(data->cmd[data->i]->here_doc_pfd, STDIN_FILENO) == -1)
 	    {
     		perror("Error: dup2 prev_pipe");
@@ -139,7 +169,6 @@ void	ft_redirection_here_doc(t_data *data)
 
 void	ft_redirection_pipe(t_data *data)
 {
-    printf("in ft_redirection_pipe\n");
     if (data->i != data->nb_pipe)
         close(data->pipefd[0]);
     if (dup2(data->prev_pipe, STDIN_FILENO) == -1)
@@ -159,8 +188,10 @@ void	ft_redirection_pipe(t_data *data)
 
 void	ft_redirection_out_cmd(t_data *data)
 {
-    printf("ft_redirection_out_cmd\n");
 	int	fd_out;
+    int i;
+
+    i = 0;
     if (data->nb_pipe == 0 && data->builtin_cmd == 1 && data->display_builtin_cmd == 1)//Сохраняем стандартный канал вывода
         data->std_out = dup(1);
     if (data->i != data->nb_pipe)
@@ -171,7 +202,37 @@ void	ft_redirection_out_cmd(t_data *data)
     {
         if (data->cmd[data->i]->output_file != NULL)
         {
-            fd_out = open(data->cmd[data->i]->output_file, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+            while (data->cmd[data->i]->output_files[i] != NULL)
+            {
+                fd_out = open(data->cmd[data->i]->output_files[i], O_WRONLY | O_TRUNC | O_CREAT, 0644);
+                if (fd_out == -1)
+                {
+                    perror("Error opening output file");
+                    if (data->flag_pipe > 0)
+                        free_pipe(0);
+                    if (data->std_out != 0)
+                        close(data->std_out);
+                    if (data->nb_pipe == 0 && data->builtin_cmd == 1)
+	                {
+    		            data->back_in_main = 1;
+    		            data->exit_status = 1;
+    	                return ;
+                    }
+	                else    	            
+                    {
+           		        free_all_data(data);
+        		        rl_clear_history();
+                        exit (EXIT_FAILURE);
+	                }
+                }
+                close(fd_out);
+                i++;
+            }
+        }
+        i = 0;
+        while (data->cmd[data->i]->append_files[i] != NULL)
+        {
+            fd_out = open(data->cmd[data->i]->append_files[i], O_WRONLY | O_CREAT | O_APPEND, 0644);;
             if (fd_out == -1)
             {
                 perror("Error opening output file");
@@ -187,12 +248,13 @@ void	ft_redirection_out_cmd(t_data *data)
                 }
 	            else    	            
                 {
-           		    free_all_data(data);
-        		    rl_clear_history();
+           	        free_all_data(data);
+        	        rl_clear_history();
                     exit (EXIT_FAILURE);
 	            }
             }
             close(fd_out);
+            i++;
         }
 		fd_out = open(data->cmd[data->i]->append_file, O_WRONLY | O_CREAT | O_APPEND, 0644);
     }
@@ -200,28 +262,59 @@ void	ft_redirection_out_cmd(t_data *data)
     {
         if (data->cmd[data->i]->append_file != NULL)
         {
-            fd_out = open(data->cmd[data->i]->append_file, O_WRONLY | O_CREAT | O_APPEND, 0644);;
+            while (data->cmd[data->i]->append_files[i] != NULL)
+            {
+                fd_out = open(data->cmd[data->i]->append_files[i], O_WRONLY | O_CREAT | O_APPEND, 0644);;
+                if (fd_out == -1)
+                {
+                    perror("Error opening output file");
+                    if (data->flag_pipe > 0)
+                        free_pipe(0);
+                    if (data->std_out != 0)
+                        close(data->std_out);
+                    if (data->nb_pipe == 0 && data->builtin_cmd == 1)
+	                {
+    		            data->back_in_main = 1;
+    		            data->exit_status = 1;
+    	                return ;
+                    }
+	                else    	            
+                    {
+           		        free_all_data(data);
+        		        rl_clear_history();
+                        exit (EXIT_FAILURE);
+	                }
+                }
+                close(fd_out);
+                i++;
+            }
+        }
+        i = 0;
+        while (data->cmd[data->i]->output_files[i] != NULL)
+        {
+            fd_out = open(data->cmd[data->i]->output_files[i], O_WRONLY | O_TRUNC | O_CREAT, 0644);
             if (fd_out == -1)
             {
                 perror("Error opening output file");
                 if (data->flag_pipe > 0)
                     free_pipe(0);
                 if (data->std_out != 0)
-                    close(data->std_out);
+                     close(data->std_out);
                 if (data->nb_pipe == 0 && data->builtin_cmd == 1)
 	            {
-    		        data->back_in_main = 1;
-    		        data->exit_status = 1;
-    	            return ;
+    	            data->back_in_main = 1;
+    	            data->exit_status = 1;
+	                return ;
                 }
 	            else    	            
                 {
-           		    free_all_data(data);
-        		    rl_clear_history();
+       		        free_all_data(data);
+    		        rl_clear_history();
                     exit (EXIT_FAILURE);
 	            }
             }
             close(fd_out);
+            i++;
         }
 		fd_out = open(data->cmd[data->i]->output_file, O_WRONLY | O_TRUNC | O_CREAT, 0644);
     }
@@ -249,7 +342,6 @@ void	ft_redirection_out_cmd(t_data *data)
         close(fd_out);
     else
     {
-         printf("befor dup2(fd_out, STDOUT_FILENO)\n");
 	    if (dup2(fd_out, STDOUT_FILENO) == -1)
 	    {
 		    perror("dup2 fd_out");
@@ -274,7 +366,6 @@ void	ft_redirection_out_cmd(t_data *data)
 
 void    ft_redirection_out_pipe(t_data *data)
 {
-    printf("in ft_redirection_out_pipe\n");
     if (dup2(data->pipefd[1], STDOUT_FILENO) == -1)
 	{
 		perror("Error: dup2 pipefd[1]");

@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 04:50:13 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/22 03:58:07 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/22 06:33:14 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,10 @@ void	check_builtin_command(t_data *data)
 	else if (ft_strcmp(data->cmd[data->i]->cmd, "unset") == 0)
 		data->builtin_cmd = 1;
 	else if (ft_strcmp(data->cmd[data->i]->cmd, "cd") == 0)
+	{
 		data->builtin_cmd = 1;
+		data->display_builtin_cmd = 1;
+	}
 	else if (ft_strcmp(data->cmd[data->i]->cmd, "env") == 0)
 	{
 		data->builtin_cmd = 1;
@@ -37,7 +40,6 @@ void	check_builtin_command(t_data *data)
 		data->builtin_cmd = 1;
 		data->display_builtin_cmd = 1;
 	}
-	printf("data->builtin_cmd %i\n", data->builtin_cmd);
 }
 
 void	redirection_builtin_command(t_data *data)
@@ -77,13 +79,9 @@ void	execute_builtin_command(t_data *data)
 		args = data->cmd[data->i]->cmd_arg;
 		check_builtin_command(data);//Проверям наши ли это команды или нет а так же выводятли они результат или нет 
 		if (data->nb_pipe == 0 && data->builtin_cmd == 1)//Если это наши команды то запускаем переадресацию на ввод/вывод
-		{
-			printf("befor redirection_builtin_command data->cmd[data->i]->cmd == %s // data->builtin_cmd == %i\n", data->cmd[data->i]->cmd, data->builtin_cmd);
 			redirection_builtin_command(data);
-		}
 		if (data->back_in_main == 1)
 			return ;
-		printf("befor cmds execute_builtin_command\n");
 		if (ft_strcmp(data->cmd[data->i]->cmd, "echo") == 0)
 			echo(data);
 		else if (ft_strcmp(data->cmd[data->i]->cmd, "exit") == 0)
@@ -96,8 +94,18 @@ void	execute_builtin_command(t_data *data)
 			print_env(data);
 		else if (ft_strcmp(args[0], "pwd") == 0)
 			pwd(data);
+		else if (ft_strcmp(args[0], "cd") == 0)
+		{
+			if (args[2] != NULL) // Проверяем наличие лишних аргументов
+			{
+				ft_printf("cd: too many arguments\n");
+				data->back_in_main = 1;
+				data->exit_status = 1;
+				return ;
+			}
+			cd(data, args[1]);
+		}
 	}
-		printf("after cmds execute_builtin_command\n");
 	if (data->nb_pipe == 0 && data->builtin_cmd == 1 && data->display_builtin_cmd == 1 && (data->cmd[data->i]->output_file != NULL || data->cmd[data->i]->append_file != NULL))//Востанавливаем стандартный вывод после env/echo/pwd
 	{
 		if (dup2(data->std_out, 1) == -1)

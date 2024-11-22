@@ -117,8 +117,19 @@ void	parse_single_command(t_cmd *cmd, char *input, t_data *data)
 	else
 		cmd->cmd_arg[arg_idx] = NULL;
 	free_split(tokens);
-	if (cmd->here_doc_file != NULL) //Если есть слово limiter то запускаем here doc
-		execution_here_doc(cmd, data);
+	i = 0;
+	if (cmd->here_doc_file == NULL)
+		return ;
+	else
+	{
+		while (cmd->here_doc_files[i] != NULL)
+		{
+			execution_here_doc(cmd , cmd->here_doc_files[i], data);
+			if (data->back_in_main == 1)//Выход из за сигнала SIGINT 
+				return;
+			i++;
+		}
+	}
 }
 
 int validate_quotes(const char *input)
