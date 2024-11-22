@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/13 05:05:49 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/21 23:47:37 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,7 @@ void	print_commands(t_data *data)
 	}
 }
 
-
-char **copy_envp(char **envp)
+char	**copy_envp(char **envp)
 {
 	int		i;
 	int		count;
@@ -98,37 +97,47 @@ void	free_data_cmd(t_data *data)
 
 	// Освобождаем каждую команду в data->cmd
 	i = 0;
-	while (data->cmd[i] != NULL)
+	if (data->cmd)
 	{
-		if (data->cmd[i]->cmd_arg)
+		while (data->cmd[i] != NULL)
 		{
-			j = 0;
-			while (data->cmd[i]->cmd_arg[j])
+			if (data->cmd[i]->cmd_arg)
 			{
-				free(data->cmd[i]->cmd_arg[j]);
-				j++;
+				j = 0;
+				while (data->cmd[i]->cmd_arg[j])
+				{
+					free(data->cmd[i]->cmd_arg[j]);
+					j++;
+				}
+				free(data->cmd[i]->cmd_arg);
 			}
-			free(data->cmd[i]->cmd_arg);
+			if (data->cmd[i]->cmd)
+				free(data->cmd[i]->cmd);
+			if (data->cmd[i]->input_file)
+				free(data->cmd[i]->input_file);
+			if (data->cmd[i]->here_doc_file)
+				free(data->cmd[i]->here_doc_file);
+			if (data->cmd[i]->output_file)
+				free(data->cmd[i]->output_file);
+			if (data->cmd[i]->append_file)
+				free(data->cmd[i]->append_file);
+			if (data->cmd[i]->here_doc_pfd != 0)
+				//Закрываем канал чтения из here doc
+			{
+				close(data->cmd[i]->here_doc_pfd);
+				data->cmd[i]->here_doc_pfd = 0;
+			}
+			free(data->cmd[i]);
+			i++;
 		}
-		if (data->cmd[i]->cmd)
-			free(data->cmd[i]->cmd);
-		if (data->cmd[i]->input_file)
-			free(data->cmd[i]->input_file);
-		if (data->cmd[i]->here_doc_file)
-			free(data->cmd[i]->here_doc_file);
-		if (data->cmd[i]->output_file)
-			free(data->cmd[i]->output_file);
-		if (data->cmd[i]->append_file)
-			free(data->cmd[i]->append_file);
-		free(data->cmd[i]);
-		i++;
+		free(data->cmd);
+		data->cmd = NULL;
 	}
-	free(data->cmd);
-	data->cmd = NULL;
 }
+
 void	free_envp(t_data *data)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (data->envp[i] != NULL)
@@ -138,7 +147,6 @@ void	free_envp(t_data *data)
 	}
 	free(data->envp);
 	data->envp = NULL;
-
 }
 
 void	free_all_data(t_data *data)
@@ -146,20 +154,20 @@ void	free_all_data(t_data *data)
 	if (data)
 	{
 		if (data->cmd != NULL)
-			free_data_cmd(data);    // Освобождаем команды и связанные строки
+			free_data_cmd(data); // Освобождаем команды и связанные строки
 		if (data->envp != NULL)
-			free_envp(data);    // Освобождаем переменные окружения
-		if (data->user_input != NULL) 
+			free_envp(data); // Освобождаем переменные окружения
+		if (data->user_input != NULL)
 			free(data->user_input);
-		free(data);             // Освобождаем структуру data
+		free(data); // Освобождаем структуру data
 	}
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	*data;
-	int exit_status;
-	
+	int		exit_status;
+
 	(void)argv;
 	if (argc > 2) //Проверка на количество аргументов
 	{
@@ -177,21 +185,35 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	}
 	ft_memset(data, 0, sizeof(t_data));
-	data->envp = copy_envp(envp);	 //Считываем окружение , нужно для execve
+	data->envp = copy_envp(envp); //Считываем окружение , нужно для execve
 	while (1)
 	{
 		data->user_input = readline("minishell$ ");
-		if (!data->user_input )
+		if (!data->user_input)
+		{
+			ft_printf("exit\n");
 			break ;
-		if (ft_strlen(data->user_input ) > 0)
+		}
+		if (ft_strlen(data->user_input) > 0)
 			add_history(data->user_input);
+		data->back_in_main = 0;
+		data->builtin_cmd = 0;
+		data->display_builtin_cmd = 0;
 		parse_pipeline(data, data->user_input);
-		data->exit_status = exit_status; //Перед запуском новой команды подгружаем статус старой команды
+		//Перед запуском новой команды подгружаем статус старой команды
+		if (data->back_in_main == 1)
+		{
+			exit_status = data->exit_status;
+			free_data_cmd(data);
+			free(data->user_input);
+			continue ; // Пропускаем выполнение команды
+		}
+		data->exit_status = exit_status;
 		print_commands(data);    // Вывод команд для дебага
 		printf("\n---------\n"); //Отделяем вывод команды от дебага
 		choice_execution(data);
 		printf("status %i\n", data->exit_status);
-		exit_status = data->exit_status; //Сохраняем статус завершения команды перед освобождением
+		exit_status = data->exit_status;	//Сохраняем статус завершения команды перед освобождением
 		free_data_cmd(data);
 		free(data->user_input);
 	}
