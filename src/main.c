@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/21 23:47:37 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/22 03:54:06 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -200,7 +200,6 @@ int	main(int argc, char **argv, char **envp)
 		data->builtin_cmd = 0;
 		data->display_builtin_cmd = 0;
 		parse_pipeline(data, data->user_input);
-		//Перед запуском новой команды подгружаем статус старой команды
 		if (data->back_in_main == 1)
 		{
 			exit_status = data->exit_status;
@@ -213,7 +212,7 @@ int	main(int argc, char **argv, char **envp)
 		printf("\n---------\n"); //Отделяем вывод команды от дебага
 		choice_execution(data);
 		printf("status %i\n", data->exit_status);
-		exit_status = data->exit_status;	//Сохраняем статус завершения команды перед освобождением
+		data->exit_status = exit_status;
 		free_data_cmd(data);
 		free(data->user_input);
 	}
