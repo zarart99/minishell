@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_var_parser.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/25 00:06:31 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/10 19:18:01 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/22 03:58:45 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,17 +110,33 @@ char	*replace_env_var(char *input, t_data *data)
 {
 	char	*result;
 	int		i;
+	char *status;
 
-	i = 0;
-	result = ft_strdup(input);
-	if (!result)
-		return (NULL);
-	while (result[i] != '\0')
-	{
-		if (result[i] == '$')
-			result = process_variable(result, &i, data);
-		else
-			i++;
-	}
+    i = 0;
+    result = ft_strdup(input);
+    if (!result)
+        return (NULL);
+    while (result[i] != '\0')
+    {
+        if (result[i] == '\\')  // Если найден символ `\`
+        {
+            i++;  // Пропускаем его
+            continue;
+        }
+        if (result[i] == '$')  // Обрабатываем переменные окружения
+         {   
+			if (result[i + 1] == '?') // Проверяем на `$?`
+            {
+                status = ft_itoa(data->exit_status); // Конвертируем exit_status в строку
+                result = replace_substring(result, i, i + 2, status); // Заменяем `$?` на статус
+                free(status);
+            }
+            else
+                result = process_variable(result, &i, data); // Стандартная обработка переменных
+			}
+        else
+            i++;
+    }
 	return (result);
 }
+

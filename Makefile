@@ -11,6 +11,9 @@ SRCS = src/main.c\
 		src/exec/ft_envp_cherch_bonus.c\
 		src/exec/error_exit_utils.c\
 		src/exec/error_exit_utils_2.c\
+		src/exec/error_exit_utils_3.c\
+		src/exec/redirections_utils.c\
+		src/exec/redirections_utils_2.c\
 		src/builtin/exec_builtin.c\
 		src/builtin/echo.c\
 		src/builtin/exit.c\
@@ -18,7 +21,9 @@ SRCS = src/main.c\
 		src/builtin/env_var_parser.c \
 		src/builtin/export_var.c \
 		src/builtin/print_envp.c \
-		src/builtin/unset_var.c 
+		src/builtin/unset_var.c \
+		src/builtin/cd.c \
+		src/parcer_utils.c
 
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a

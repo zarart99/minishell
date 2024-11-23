@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/13 05:05:49 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/23 04:53:18 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,55 +14,108 @@
 
 int g_pid;
 
-void	print_commands(t_data *data)
+void print_commands(t_data *data)
 {
-	int	i;
-	int	j;
+    int i;
+    int j;
 
-	i = 0;
-	while (data->cmd[i] != NULL)
-	{
-		ft_printf("Command[%d]:\n", i);
-		if (data->cmd[i]->cmd)
-			ft_printf("  cmd: %s\n",
-				data->cmd[i]->cmd ? data->cmd[i]->cmd : "(null)");
-		if (data->cmd[i]->cmd_arg)
-		{
-			j = 0;
-			while (data->cmd[i]->cmd_arg[j] != NULL)
-			{
-				ft_printf("  cmd_arg[%d]: %s\n", j, data->cmd[i]->cmd_arg[j]);
-				j++;
-			}
-		}
-		else
-			ft_printf("  cmd_arg: (null)\n");
-		if (data->cmd[i]->input_file)
-			ft_printf("  input_file: %s (pos_input: %d)\n",
-				data->cmd[i]->input_file, data->cmd[i]->pos_input);
-		else
-			ft_printf("  input_file: (null)\n");
-		if (data->cmd[i]->here_doc_file)
-			ft_printf("  here_doc_file: %s (pos_here_doc: %d)\n",
-				data->cmd[i]->here_doc_file, data->cmd[i]->pos_here_doc);
-		else
-			ft_printf("  here_doc_file: (null)\n");
-		if (data->cmd[i]->output_file)
-			ft_printf("  output_file: %s (pos_output: %d)\n",
-				data->cmd[i]->output_file, data->cmd[i]->pos_output);
-		else
-			ft_printf("  output_file: (null)\n");
-		if (data->cmd[i]->append_file)
-			ft_printf("  append_file: %s (pos_append: %d)\n",
-				data->cmd[i]->append_file, data->cmd[i]->pos_append);
-		else
-			ft_printf("  append_file: (null)\n");
-		i++;
-	}
+    i = 0;
+    while (data->cmd[i] != NULL)
+    {
+        ft_printf("Command[%d]:\n", i);
+
+        if (data->cmd[i]->cmd)
+            ft_printf("  cmd: %s\n",
+                data->cmd[i]->cmd ? data->cmd[i]->cmd : "(null)");
+
+        if (data->cmd[i]->cmd_arg)
+        {
+            j = 0;
+            while (data->cmd[i]->cmd_arg[j] != NULL)
+            {
+                ft_printf("  cmd_arg[%d]: %s\n", j, data->cmd[i]->cmd_arg[j]);
+                j++;
+            }
+        }
+        else
+            ft_printf("  cmd_arg: (null)\n");
+
+        // Final input, output, append, and here_doc files
+        if (data->cmd[i]->input_file)
+            ft_printf("  final_input: %s\n", data->cmd[i]->input_file);
+        else
+            ft_printf("  final_input: (null)\n");
+
+        if (data->cmd[i]->output_file)
+            ft_printf("  final_output: %s\n", data->cmd[i]->output_file);
+        else
+            ft_printf("  final_output: (null)\n");
+
+        if (data->cmd[i]->append_file)
+            ft_printf("  final_append_file: %s\n", data->cmd[i]->append_file);
+        else
+            ft_printf("  final_append_file: (null)\n");
+
+        if (data->cmd[i]->here_doc_file)
+            ft_printf("  final_here_doc_file: %s\n", data->cmd[i]->here_doc_file);
+        else
+            ft_printf("  final_here_doc_file: (null)\n");
+
+        // Print arrays of files
+        if (data->cmd[i]->input_files)
+        {
+            j = 0;
+            while (data->cmd[i]->input_files[j] != NULL)
+            {
+                ft_printf("  input_files[%d]: %s\n", j, data->cmd[i]->input_files[j]);
+                j++;
+            }
+        }
+        else
+            ft_printf("  input_files: (null)\n");
+
+        if (data->cmd[i]->output_files)
+        {
+            j = 0;
+            while (data->cmd[i]->output_files[j] != NULL)
+            {
+                ft_printf("  output_files[%d]: %s\n", j, data->cmd[i]->output_files[j]);
+                j++;
+            }
+        }
+        else
+            ft_printf("  output_files: (null)\n");
+
+        if (data->cmd[i]->append_files)
+        {
+            j = 0;
+            while (data->cmd[i]->append_files[j] != NULL)
+            {
+                ft_printf("  append_files[%d]: %s\n", j, data->cmd[i]->append_files[j]);
+                j++;
+            }
+        }
+        else
+            ft_printf("  append_files: (null)\n");
+
+        if (data->cmd[i]->here_doc_files)
+        {
+            j = 0;
+            while (data->cmd[i]->here_doc_files[j] != NULL)
+            {
+                ft_printf("  here_doc_files[%d]: %s\n", j, data->cmd[i]->here_doc_files[j]);
+                j++;
+            }
+        }
+        else
+            ft_printf("  here_doc_files: (null)\n");
+
+        i++;
+    }
 }
 
 
-char **copy_envp(char **envp)
+char	**copy_envp(char **envp)
 {
 	int		i;
 	int		count;
@@ -91,6 +144,22 @@ char **copy_envp(char **envp)
 	return (new_envp);
 }
 
+void free_cmd_files(t_cmd *cmd)
+{
+    if (cmd->input_files)
+        free_split(cmd->input_files);
+
+    if (cmd->output_files)
+        free_split(cmd->output_files);
+
+    if (cmd->append_files)
+        free_split(cmd->append_files);
+
+    if (cmd->here_doc_files)
+        free_split(cmd->here_doc_files);
+}
+
+
 void	free_data_cmd(t_data *data)
 {
 	int	i;
@@ -98,37 +167,48 @@ void	free_data_cmd(t_data *data)
 
 	// Освобождаем каждую команду в data->cmd
 	i = 0;
-	while (data->cmd[i] != NULL)
+	if (data->cmd)
 	{
-		if (data->cmd[i]->cmd_arg)
+		while (data->cmd[i] != NULL)
 		{
-			j = 0;
-			while (data->cmd[i]->cmd_arg[j])
+			if (data->cmd[i]->cmd_arg)
 			{
-				free(data->cmd[i]->cmd_arg[j]);
-				j++;
+				j = 0;
+				while (data->cmd[i]->cmd_arg[j])
+				{
+					free(data->cmd[i]->cmd_arg[j]);
+					j++;
+				}
+				free(data->cmd[i]->cmd_arg);
 			}
-			free(data->cmd[i]->cmd_arg);
+			if (data->cmd[i]->cmd)
+				free(data->cmd[i]->cmd);
+			if (data->cmd[i]->input_file)
+				free(data->cmd[i]->input_file);
+			if (data->cmd[i]->here_doc_file)
+				free(data->cmd[i]->here_doc_file);
+			if (data->cmd[i]->output_file)
+				free(data->cmd[i]->output_file);
+			if (data->cmd[i]->append_file)
+				free(data->cmd[i]->append_file);
+			if (data->cmd[i]->here_doc_pfd != 0)
+				//Закрываем канал чтения из here doc
+			{
+				close(data->cmd[i]->here_doc_pfd);
+				data->cmd[i]->here_doc_pfd = 0;
+			}
+			free_cmd_files(data->cmd[i]);
+			free(data->cmd[i]);
+			i++;
 		}
-		if (data->cmd[i]->cmd)
-			free(data->cmd[i]->cmd);
-		if (data->cmd[i]->input_file)
-			free(data->cmd[i]->input_file);
-		if (data->cmd[i]->here_doc_file)
-			free(data->cmd[i]->here_doc_file);
-		if (data->cmd[i]->output_file)
-			free(data->cmd[i]->output_file);
-		if (data->cmd[i]->append_file)
-			free(data->cmd[i]->append_file);
-		free(data->cmd[i]);
-		i++;
+		free(data->cmd);
+		data->cmd = NULL;
 	}
-	free(data->cmd);
-	data->cmd = NULL;
 }
+
 void	free_envp(t_data *data)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (data->envp[i] != NULL)
@@ -138,7 +218,6 @@ void	free_envp(t_data *data)
 	}
 	free(data->envp);
 	data->envp = NULL;
-
 }
 
 void	free_all_data(t_data *data)
@@ -146,20 +225,20 @@ void	free_all_data(t_data *data)
 	if (data)
 	{
 		if (data->cmd != NULL)
-			free_data_cmd(data);    // Освобождаем команды и связанные строки
+			free_data_cmd(data); // Освобождаем команды и связанные строки
 		if (data->envp != NULL)
-			free_envp(data);    // Освобождаем переменные окружения
-		if (data->user_input != NULL) 
+			free_envp(data); // Освобождаем переменные окружения
+		if (data->user_input != NULL)
 			free(data->user_input);
-		free(data);             // Освобождаем структуру data
+		free(data); // Освобождаем структуру data
 	}
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	*data;
-	int exit_status;
-	
+	int		exit_status;
+
 	(void)argv;
 	if (argc > 2) //Проверка на количество аргументов
 	{
@@ -177,21 +256,35 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	}
 	ft_memset(data, 0, sizeof(t_data));
-	data->envp = copy_envp(envp);	 //Считываем окружение , нужно для execve
+	data->envp = copy_envp(envp); //Считываем окружение , нужно для execve
 	while (1)
 	{
 		data->user_input = readline("minishell$ ");
-		if (!data->user_input )
+		if (!data->user_input)
+		{
+			ft_printf("exit\n");
 			break ;
-		if (ft_strlen(data->user_input ) > 0)
+		}
+		if (ft_strlen(data->user_input) > 0)
 			add_history(data->user_input);
+		data->back_in_main = 0;
+		data->builtin_cmd = 0;
+		data->display_builtin_cmd = 0;
 		parse_pipeline(data, data->user_input);
-		data->exit_status = exit_status; //Перед запуском новой команды подгружаем статус старой команды
+		if (data->back_in_main == 1)
+		{
+			exit_status = data->exit_status;
+			free_data_cmd(data);
+			free(data->user_input);
+			continue ; // Пропускаем выполнение команды
+		}
+		data->exit_status = exit_status;
 		print_commands(data);    // Вывод команд для дебага
 		printf("\n---------\n"); //Отделяем вывод команды от дебага
 		choice_execution(data);
 		printf("status %i\n", data->exit_status);
-		exit_status = data->exit_status; //Сохраняем статус завершения команды перед освобождением
+		exit_status = data->exit_status;
+		printf("data->exit_status = exit_status == %i\n", exit_status);
 		free_data_cmd(data);
 		free(data->user_input);
 	}
