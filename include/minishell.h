@@ -86,20 +86,34 @@ void        ft_add_cmd(char **strs, char *cmd);
 void        ft_add_symb(char **strs);
 
 void		choice_execution(t_data *data);                             //Здесь будет происходить выбор между нашими командами и системными
-void		execution_cmd(t_data *data);                                //Функция где создаются дочерние процессы и пайпы
+void		execution_cmd(t_data *data);
+void	    manage_fd(t_data *data, int pid);                                //Функция где создаются дочерние процессы и пайпы
 void	    ft_launch_cmd(t_data *data);                 //Запускает исполнение системной команды + редирекции
-void	    wait_processes(t_data *data);                               //Ожидание последнего дочернего процесса + сохраняем статус последнего 
-char        **join_arg(t_data *data);                                   //Объединяем имя команды , аргумент , + NULL требуется для execve
-//void		ft_launch_here_doc(t_data *data);
-void	execution_here_doc(t_cmd *cmd, char *here_doc_file, t_data *data);                          //Если есть here_doc то это функция которая его исполняет
-void	read_line_here_doc(char *here_doc_file, int pipefd);
+void	    check_file_args(t_data *data);
+void	    wait_processes(t_data *data);
+                               
+void	    execution_here_doc(t_cmd *cmd, char *here_doc_file, t_data *data);                          //Если есть here_doc то это функция которая его исполняет
+void	    read_line_here_doc(char *here_doc_file, int pipefd);
 
 void        redirection(t_data *data);            //Функция определяет какой из 4 вариантов output нужно задействовать для текущей команды
 
 void        ft_redirection_in(t_data *data);             //Переадресация из файла в команду
 void        ft_redirection_here_doc(t_data *data);       //Переадресация из here_doc в команду
+void	    manage_fd_redirection_input(t_data *data, int flag_heredoc);
+int	        check_input_files(t_data *data, int flag_heredoc);
+void        redirection_input_stdin(t_data *data, int fd_in);
+void        redirection_here_doc_stdin(t_data *data);
+
+
 void        ft_redirection_pipe(t_data *data);           //Переадресация из пайпа в команду
 void        ft_redirection_out_cmd(t_data *data);        //Переадресация из команды в файл / 2 варианта файла
+void	    manage_fd_redirection_output(t_data *data);
+int         check_output_files(t_data *data);
+int	        check_append_files(t_data *data);
+int         redirection_output_stdout(t_data *data, int fd_out);
+int         check_files(t_data *data, int flag);
+int         redirection_output(t_data *data, int fd_out);
+
 void        ft_redirection_out_pipe(t_data *data);       //Переадресация из команды в пайп
 
 /*Блок для корректного выхода из процесса из за ошибок */
@@ -121,9 +135,20 @@ void    handle_sigint(int sig);
 
 //Наши функции 
 void	execute_builtin_command(t_data *data);
+void	check_builtin_command(t_data *data);
+void	redirection_builtin_command(t_data *data);
+void	launch_func_builtin(t_data *data);
+void	remove_stdout(t_data *data);
+//echo
 void	echo(t_data *data);
 int	    check_option_n(char *arg);
+void	display_str(t_data *data, int i_2, int n);
+
+//exit
 void	exit_total(t_data *data);
+void	check_isdigit(t_data *data);
+int     ft_atoi_mod(const char *nptr);
+
 void	pwd(t_data *data);
 
 void	close_input(t_data *data);//Закрываем переадресацию на вход для наших функций 
@@ -134,4 +159,11 @@ void    free_all_data(t_data *data);
 void	free_data_cmd(t_data *data);
 
 void sigint_heredoc(t_data *data, int pipefd[2], int in);
+
+int	    exit_cmds_builtin(t_data *data, char *error, int status, char *most_by_free);
+void	close_here_doc_pfd(int fd);
+void	exit_eof(char *lim);
+void	exit_only_child(t_data *data, int status);
+void	error_fork(t_data *data);
+int     exit_open(t_data *data, int fd_out);
 #endif
