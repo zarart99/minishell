@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/22 06:31:46 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/23 14:31:19 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -270,6 +270,11 @@ int	main(int argc, char **argv, char **envp)
 		data->back_in_main = 0;
 		data->builtin_cmd = 0;
 		data->display_builtin_cmd = 0;
+		if (g_pid == -50)
+		{
+    	data->exit_status = 130; // Обновляем статус перед обработкой команды.
+    	g_pid = -1;
+		}
 		parse_pipeline(data, data->user_input);
 		if (data->back_in_main == 1)
 		{
