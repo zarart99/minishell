@@ -72,19 +72,27 @@ void	handle_redirection(t_cmd *cmd, char **tokens, int *i,
 
 void	handle_command_args(t_cmd *cmd, char **tokens, int *i, int *arg_idx)
 {
+	int j;
+
+	j = 0;
 	if (cmd->cmd_arg == NULL)
 	{
 		cmd->cmd_arg = malloc(sizeof(char *) * 100);
-		if (!cmd->cmd_arg)
-			return ;
-		cmd->cmd = ft_strdup(tokens[*i]);
+        if (!cmd->cmd_arg)
+            return ;
+        while (j < 100)
+        {
+			cmd->cmd_arg[j] = NULL;
+			j++;
+		}
+        cmd->cmd = ft_strdup(tokens[*i]);
 		if (!cmd->cmd)
 		{
-			free(cmd->cmd_arg);
-			cmd->cmd_arg = NULL;
+            free(cmd->cmd_arg);
+            cmd->cmd_arg = NULL;
 			return ;
-		}
-	}
+        }
+    }
 	cmd->cmd_arg[(*arg_idx)++] = ft_strdup(tokens[*i]);
 }
 
@@ -157,46 +165,46 @@ void	parse_pipeline(t_data *data, char *input)
     int i;
 
     if (!validate_quotes(input))     // Проверяем наличие незакрытых кавычек
-    {
-		data->back_in_main = 1;
+{
+        data->back_in_main = 1;
         ft_printf("Error: unclosed quotes\n");
         return ;
     }
     cmd_count = 0;
-    i = 0;
+i = 0;
     command_tokens = ft_split(input, '|');
     if (!command_tokens)
-    {
+{
         return ;
     }
     while (command_tokens[cmd_count] != NULL)
         cmd_count++;
     data->cmd = malloc(sizeof(t_cmd *) * (cmd_count + 1));
     if (!data->cmd)
-    {
+{
         free_split(command_tokens);
         return ;
     }
     data->nb_pipe = cmd_count - 1;
     while (i < cmd_count)
-    {
+{
         data->cmd[i] = malloc(sizeof(t_cmd));
         if (!data->cmd[i])
-        {
+{
             perror("malloc failed");
             free_split(command_tokens);
-			free_data_cmd(data); // Освобождаем всё, если выделение не удалось
+            free_data_cmd(data); // Освобождаем всё, если выделение не удалось
             return ;
         }
         ft_memset(data->cmd[i], 0, sizeof(t_cmd));
         parse_single_command(data->cmd[i], command_tokens[i], data);
-		if (data->back_in_main == 1)//Выход из за сигнала SIGINT 
-		{
-			data->cmd[cmd_count] = NULL;//Почему то если не поставить эту инструкцию то если после запуска минишелл запустить команду minishell$ << end и выйти через ctrl C то появляется ошибка сигментации 
-			free_split(command_tokens);
-			return ;
-		}
-	i++;
+        if (data->back_in_main == 1)//Выход из за сигнала SIGINT 
+{
+            data->cmd[cmd_count] = NULL;//Почему то если не поставить эту инструкцию то если после запуска минишелл запустить команду minishell$ << end и выйти через ctrl C то появляется ошибка сигментации 
+            free_split(command_tokens);
+            return ;
+        }
+i++;
     }
     data->cmd[cmd_count] = NULL;
     free_split(command_tokens);

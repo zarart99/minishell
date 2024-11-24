@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_builtin.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 04:50:13 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/22 22:21:56 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/24 17:42:04 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,13 @@ void	launch_func_builtin(t_data *data)
 	{
 		if (data->cmd[data->i]->cmd_arg[2] != NULL)
 			exit_cmds_builtin(data, "cd: too many arguments\n", 1, NULL);
-		cd(data, data->cmd[data->i]->cmd_arg[1]);
+		else
+		{
+			if (data->cmd[data->i]->cmd_arg[1] == NULL)
+				cd(data, NULL); // Если аргумент отсутствует
+			else
+				cd(data, data->cmd[data->i]->cmd_arg[1]);
+		}
 	}
 }
 
