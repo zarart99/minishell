@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/23 04:53:18 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/24 11:47:27 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -284,7 +284,6 @@ int	main(int argc, char **argv, char **envp)
 		choice_execution(data);
 		printf("status %i\n", data->exit_status);
 		exit_status = data->exit_status;
-		printf("data->exit_status = exit_status == %i\n", exit_status);
 		free_data_cmd(data);
 		free(data->user_input);
 	}
