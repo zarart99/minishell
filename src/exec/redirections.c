@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 00:47:25 by artemii           #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2024/11/24 11:30:47 by mmychaly         ###   ########.fr       */
+=======
+/*   Updated: 2024/11/24 15:22:36 by artemii          ###   ########.fr       */
+>>>>>>> d801483953199c9985ba4f83f2bb420c0280afb0
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,15 +87,15 @@ void	ft_redirection_out_cmd(t_data *data)
 	{
 		if (check_files(data, 1) == 1)
 			return ;
-		fd_out = open(data->cmd[data->i]->append_file, O_WRONLY
-				| O_CREAT | O_APPEND, 0644);
+		fd_out = open(data->cmd[data->i]->append_file, O_WRONLY |
+				O_CREAT | O_APPEND, 0644);
 	}
 	else
 	{
 		if (check_files(data, 0) == 1)
 			return ;
-		fd_out = open(data->cmd[data->i]->output_file, O_WRONLY
-				| O_TRUNC | O_CREAT, 0644);
+		fd_out = open(data->cmd[data->i]->output_file, O_WRONLY |
+				O_TRUNC | O_CREAT, 0644);
 	}
 	if (exit_open(data, fd_out) == 1)
 		return ;
