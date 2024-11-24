@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:06:33 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/23 06:02:50 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/24 17:00:01 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,6 @@ void	choice_execution(t_data *data)
 	data->prev_pipe = -1;
 	data->i = 0;
 	data->flag_pipe = 0;
-	if (g_pid == -50)
-	{
-		data->exit_status = 130;
-		g_pid = -1;
-	}
 	if (data->nb_pipe == 0)
 	{
 		execute_builtin_command(data);
