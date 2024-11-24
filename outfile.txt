@@ -1,1 +1,2 @@
-/home/mikerf/projects_group/minishell
+non 2
+not 2

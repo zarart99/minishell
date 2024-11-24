@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/24 17:28:31 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/24 17:43:29 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -270,6 +270,11 @@ int	main(int argc, char **argv, char **envp)
 		data->back_in_main = 0;
 		data->builtin_cmd = 0;
 		data->display_builtin_cmd = 0;
+		if (g_pid == -50)
+		{
+    		data->exit_status = 130;
+    		g_pid = -1;
+		}
 		parse_pipeline(data, data->user_input);
 		if (data->back_in_main == 1)
 		{
@@ -279,10 +284,10 @@ int	main(int argc, char **argv, char **envp)
 			continue ; // Пропускаем выполнение команды
 		}
 		data->exit_status = exit_status;
-		//print_commands(data);    // Вывод команд для дебага
-		//printf("\n---------\n"); //Отделяем вывод команды от дебага
+//		print_commands(data);    // Вывод команд для дебага
+//		printf("\n---------\n"); //Отделяем вывод команды от дебага
 		choice_execution(data);
-		//printf("status %i\n", data->exit_status);
+//		printf("status %i\n", data->exit_status);
 		exit_status = data->exit_status;
 		free_data_cmd(data);
 		free(data->user_input);

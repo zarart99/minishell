@@ -165,35 +165,35 @@ void	parse_pipeline(t_data *data, char *input)
     int i;
 
     if (!validate_quotes(input))     // Проверяем наличие незакрытых кавычек
-{
-        data->back_in_main = 1;
+    {
+		data->back_in_main = 1;
         ft_printf("Error: unclosed quotes\n");
         return ;
     }
     cmd_count = 0;
-i = 0;
+    i = 0;
     command_tokens = ft_split(input, '|');
     if (!command_tokens)
-{
+    {
         return ;
     }
     while (command_tokens[cmd_count] != NULL)
         cmd_count++;
     data->cmd = malloc(sizeof(t_cmd *) * (cmd_count + 1));
     if (!data->cmd)
-{
+    {
         free_split(command_tokens);
         return ;
     }
     data->nb_pipe = cmd_count - 1;
     while (i < cmd_count)
-{
+    {
         data->cmd[i] = malloc(sizeof(t_cmd));
         if (!data->cmd[i])
-{
+        {
             perror("malloc failed");
             free_split(command_tokens);
-            free_data_cmd(data); // Освобождаем всё, если выделение не удалось
+			free_data_cmd(data); // Освобождаем всё, если выделение не удалось
             return ;
         }
         ft_memset(data->cmd[i], 0, sizeof(t_cmd));
