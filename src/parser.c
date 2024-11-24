@@ -13,6 +13,28 @@ void	free_split(char **args)
 	free(args);
 }
 
+char **realloc_array(char **array, char *new_element)
+{
+    int size = 0;
+    char **new_array;
+
+    if (array)
+        while (array[size])
+            size++;
+    new_array = malloc(sizeof(char *) * (size + 2)); // +1 для нового элемента, +1 для NULL
+    if (!new_array)
+    {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+    for (int i = 0; i < size; i++)
+        new_array[i] = array[i];
+    new_array[size] = new_element;
+    new_array[size + 1] = NULL;
+    free(array); // Освобождаем старый массив
+    return new_array;
+}
+
 // Обработка редиректов и установка позиций
 void	handle_redirection(t_cmd *cmd, char **tokens, int *i,
 		int *redir_position)
@@ -22,42 +44,55 @@ void	handle_redirection(t_cmd *cmd, char **tokens, int *i,
 		*i += 1;
 		cmd->input_file = ft_strdup(tokens[*i]);
 		cmd->pos_input = (*redir_position)++;
+		cmd->input_files = realloc_array(cmd->input_files, ft_strdup(tokens[*i]));
+
 	}
 	else if (ft_strcmp(tokens[*i], ">") == 0)
 	{
 		*i += 1;
 		cmd->output_file = ft_strdup(tokens[*i]);
 		cmd->pos_output = (*redir_position)++;
+		cmd->output_files = realloc_array(cmd->output_files, ft_strdup(tokens[*i]));
 	}
 	else if (ft_strcmp(tokens[*i], ">>") == 0)
 	{
 		*i += 1;
 		cmd->append_file = ft_strdup(tokens[*i]);
 		cmd->pos_append = (*redir_position)++;
+		cmd->append_files = realloc_array(cmd->append_files, ft_strdup(tokens[*i]));
 	}
 	else if (ft_strcmp(tokens[*i], "<<") == 0)
 	{
 		*i += 1;
 		cmd->here_doc_file = ft_strdup(tokens[*i]);
 		cmd->pos_here_doc = (*redir_position)++;
+		cmd->here_doc_files = realloc_array(cmd->here_doc_files, ft_strdup(tokens[*i]));
 	}
 }
 
 void	handle_command_args(t_cmd *cmd, char **tokens, int *i, int *arg_idx)
 {
+	int j;
+
+	j = 0;
 	if (cmd->cmd_arg == NULL)
 	{
 		cmd->cmd_arg = malloc(sizeof(char *) * 100);
-		if (!cmd->cmd_arg)
-			return ;
-		cmd->cmd = ft_strdup(tokens[*i]);
+        if (!cmd->cmd_arg)
+            return ;
+        while (j < 100)
+        {
+			cmd->cmd_arg[j] = NULL;
+			j++;
+		}
+        cmd->cmd = ft_strdup(tokens[*i]);
 		if (!cmd->cmd)
 		{
-			free(cmd->cmd_arg);
-			cmd->cmd_arg = NULL;
+            free(cmd->cmd_arg);
+            cmd->cmd_arg = NULL;
 			return ;
-		}
-	}
+        }
+    }
 	cmd->cmd_arg[(*arg_idx)++] = ft_strdup(tokens[*i]);
 }
 
@@ -90,8 +125,19 @@ void	parse_single_command(t_cmd *cmd, char *input, t_data *data)
 	else
 		cmd->cmd_arg[arg_idx] = NULL;
 	free_split(tokens);
-	if (cmd->here_doc_file != NULL) //Если есть слово limiter то запускаем here doc
-		execution_here_doc(cmd, data);
+	i = 0;
+	if (cmd->here_doc_file == NULL)
+		return ;
+	else
+	{
+		while (cmd->here_doc_files[i] != NULL)
+		{
+			execution_here_doc(cmd , cmd->here_doc_files[i], data);
+			if (data->back_in_main == 1)//Выход из за сигнала SIGINT 
+				return;
+			i++;
+		}
+	}
 }
 
 int validate_quotes(const char *input)
@@ -152,13 +198,13 @@ void	parse_pipeline(t_data *data, char *input)
         }
         ft_memset(data->cmd[i], 0, sizeof(t_cmd));
         parse_single_command(data->cmd[i], command_tokens[i], data);
-		if (data->back_in_main == 1)//Выход из за сигнала SIGINT 
-		{
-			data->cmd[cmd_count] = NULL;//Почему то если не поставить эту инструкцию то если после запуска минишелл запустить команду minishell$ << end и выйти через ctrl C то появляется ошибка сигментации 
-			free_split(command_tokens);
-			return ;
-		}
-	i++;
+        if (data->back_in_main == 1)//Выход из за сигнала SIGINT 
+{
+            data->cmd[cmd_count] = NULL;//Почему то если не поставить эту инструкцию то если после запуска минишелл запустить команду minishell$ << end и выйти через ctrl C то появляется ошибка сигментации 
+            free_split(command_tokens);
+            return ;
+        }
+i++;
     }
     data->cmd[cmd_count] = NULL;
     free_split(command_tokens);

@@ -6,38 +6,32 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 04:07:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/18 03:33:08 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/23 06:09:13 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void	error_empty_cmd(t_data *data)
+void	error_empty_cmd(t_data *data) //ft_launch_cmd
 {
 	write(2, "Error: Empty command\n", 21);
 	if (data->flag_pipe > 0)
 		free_pipe(0);
 	free_all_data(data);
+	rl_clear_history();
 	exit(127);
 }
 
-void	error_cmd(int flag) //Больше нет функции
+void	free_error_cmd(t_data *data)//ft_launch_cmd
 {
-	write(2, "Error: option\n", 14);
-	if (flag == 1)
-		free_pipe(0);
-	exit(127);
-}
-
-void	free_error_cmd(t_data *data)
-{
-	if (data->flag_pipe > 0) // -v
+	if (data->flag_pipe > 0)
 		free_pipe(0);
 	free_all_data(data);
+	rl_clear_history();
 	exit(127);
 }
 
-void	error_open_outfile(int flag , t_data *data)
+void	error_open_outfile(int flag , t_data *data)//пока что не использую
 {
 	perror("open outfile");
 	if (flag == 1)
@@ -55,6 +49,8 @@ void sigint_heredoc(t_data *data, int pipefd[2], int in)
 	{
     	perror("dup2 in here doc failed");
     	close(in);
+		free_all_data(data);
+        rl_clear_history();
        	exit(1);
     }
 	close(in);
