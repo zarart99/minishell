@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/24 17:43:29 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/25 02:18:26 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -257,6 +257,8 @@ int	main(int argc, char **argv, char **envp)
 	}
 	ft_memset(data, 0, sizeof(t_data));
 	data->envp = copy_envp(envp); //Считываем окружение , нужно для execve
+	    update_shlvl(data);
+
 	while (1)
 	{
 		data->user_input = readline("minishell$ ");
