@@ -22,7 +22,7 @@ static char	*get_key(const char *input)
 	return (ft_substr(input, 0, equal_pos - input));
 }
 
-static int	update_or_add_var(t_data *data, char *new_var, char *key)
+int	update_or_add_var(t_data *data, char *new_var, char *key)
 {
 	int		i;
 	char	**new_envp;

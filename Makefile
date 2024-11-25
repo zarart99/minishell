@@ -24,7 +24,8 @@ SRCS = src/main.c\
 		src/builtin/unset_var.c \
 		src/builtin/cd.c \
 		src/builtin/env_utils.c\
-		src/parcer_utils.c
+		src/parcer_utils.c \
+		src/update_shlvl.c
 
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a
