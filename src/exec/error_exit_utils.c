@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 04:08:02 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/23 05:15:14 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/25 01:01:17 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	free_pipe(int fd)
 
 void	error_fork(t_data *data)
 {
-	write(2,"ERROR: fork\n", 12);
+	write(2, "ERROR: fork\n", 12);
 	close(data->pipefd[1]);
 	close(data->pipefd[0]);
 	data->exit_status = 1;

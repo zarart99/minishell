@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 04:50:13 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/24 17:55:05 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/25 01:48:08 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,7 @@ void	launch_func_builtin(t_data *data)
 		else
 		{
 			if (data->cmd[data->i]->cmd_arg[1] == NULL)
-				cd(data, NULL); // Если аргумент отсутствует
+				cd(data, NULL);
 			else
 				cd(data, data->cmd[data->i]->cmd_arg[1]);
 		}

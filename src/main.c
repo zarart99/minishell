@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/24 17:43:29 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/25 01:19:44 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,7 +272,8 @@ int	main(int argc, char **argv, char **envp)
 		data->display_builtin_cmd = 0;
 		if (g_pid == -50)
 		{
-    		data->exit_status = 130;
+			data->exit_status = 130;
+    		exit_status = 130;
     		g_pid = -1;
 		}
 		parse_pipeline(data, data->user_input);

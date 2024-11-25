@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 00:47:25 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/24 17:47:08 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/25 01:24:17 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,14 +84,14 @@ void	ft_redirection_out_cmd(t_data *data)
 		if (check_files(data, 1) == 1)
 			return ;
 		fd_out = open(data->cmd[data->i]->append_file, O_WRONLY
-			| O_CREAT | O_APPEND, 0644);
+				| O_CREAT | O_APPEND, 0644);
 	}
 	else
 	{
 		if (check_files(data, 0) == 1)
 			return ;
 		fd_out = open(data->cmd[data->i]->output_file, O_WRONLY
-			| O_TRUNC | O_CREAT, 0644);
+				| O_TRUNC | O_CREAT, 0644);
 	}
 	if (exit_open(data, fd_out) == 1)
 		return ;
