@@ -6,10 +6,9 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:52:19 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/26 00:52:19 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/26 01:36:23 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
 
 #include "../include/minishell.h"
 
@@ -46,18 +45,3 @@ void	error_exit(const char *message)
 	perror(message);
 	exit(EXIT_FAILURE);
 }
-
-void	free_split(char **args)
-{
-	int	i;
-
-	i = 0;
-	while (args[i])
-	{
-		free(args[i]);
-		i++;
-	}
-	free(args);
-}
-
-

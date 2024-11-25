@@ -28,7 +28,8 @@ SRCS = src/main.c\
 		src/parcer/parcer_utils.c \
 		src/parcer/parcer_utils_2.c \
 		src/parcer/parcer_redirections.c \
-		src/update_shlvl.c
+		src/update_shlvl.c \
+		src/free_functions.c
 
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a
