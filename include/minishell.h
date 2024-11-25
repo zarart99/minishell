@@ -61,6 +61,13 @@ void		free_split(char **args);
 void		error_exit(const char *message);
 char        **ft_split_quotes(const char *input, t_data *data);
 void		free_structure(t_data *command);
+//Free
+
+void	free_cmd_files(t_cmd *cmd);
+void	free_cmd_resources(t_cmd *cmd);
+void	free_data_cmd(t_data *data);
+void	free_all_data(t_data *data);
+
 
 // Функции для работы с переменными окружения
 char	    *replace_env_var(char *input, t_data *data);

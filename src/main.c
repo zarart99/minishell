@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/25 04:01:16 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/26 01:20:36 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,95 +144,7 @@ char	**copy_envp(char **envp)
 	return (new_envp);
 }
 
-void free_cmd_files(t_cmd *cmd)
-{
-    if (cmd->input_files)
-        free_split(cmd->input_files);
 
-    if (cmd->output_files)
-        free_split(cmd->output_files);
-
-    if (cmd->append_files)
-        free_split(cmd->append_files);
-
-    if (cmd->here_doc_files)
-        free_split(cmd->here_doc_files);
-}
-
-
-void	free_data_cmd(t_data *data)
-{
-	int	i;
-	int	j;
-
-	// Освобождаем каждую команду в data->cmd
-	i = 0;
-	if (data->cmd)
-	{
-		while (data->cmd[i] != NULL)
-		{
-			if (data->cmd[i]->cmd_arg)
-			{
-				j = 0;
-				while (data->cmd[i]->cmd_arg[j])
-				{
-					free(data->cmd[i]->cmd_arg[j]);
-					j++;
-				}
-				free(data->cmd[i]->cmd_arg);
-			}
-			if (data->cmd[i]->cmd)
-				free(data->cmd[i]->cmd);
-			if (data->cmd[i]->input_file)
-				free(data->cmd[i]->input_file);
-			if (data->cmd[i]->here_doc_file)
-				free(data->cmd[i]->here_doc_file);
-			if (data->cmd[i]->output_file)
-				free(data->cmd[i]->output_file);
-			if (data->cmd[i]->append_file)
-				free(data->cmd[i]->append_file);
-			if (data->cmd[i]->here_doc_pfd != 0)
-				//Закрываем канал чтения из here doc
-			{
-				close(data->cmd[i]->here_doc_pfd);
-				data->cmd[i]->here_doc_pfd = 0;
-			}
-			free_cmd_files(data->cmd[i]);
-			free(data->cmd[i]);
-			i++;
-		}
-		free(data->cmd);
-		data->cmd = NULL;
-	}
-}
-
-void	free_envp(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (data->envp[i] != NULL)
-	{
-		free(data->envp[i]);
-		i++;
-	}
-	free(data->envp);
-	data->envp = NULL;
-}
-
-void	free_all_data(t_data *data)
-{
-	if (data)
-	{
-		if (data->cmd != NULL)
-			free_data_cmd(data); // Освобождаем команды и связанные строки
-		if (data->envp != NULL)
-			free_envp(data); // Освобождаем переменные окружения
-		if (data->user_input != NULL)
-			free(data->user_input);
-		free(data); // Освобождаем структуру data
-	}
-}
 
 int	main(int argc, char **argv, char **envp)
 {
