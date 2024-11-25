@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/25 04:01:16 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/26 00:42:26 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,8 +287,8 @@ int	main(int argc, char **argv, char **envp)
 			continue ; // Пропускаем выполнение команды
 		}
 		data->exit_status = exit_status;
-//		print_commands(data);    // Вывод команд для дебага
-//		printf("\n---------\n"); //Отделяем вывод команды от дебага
+		//print_commands(data);    // Вывод команд для дебага
+		//printf("\n---------\n"); //Отделяем вывод команды от дебага
 		choice_execution(data);
 //		printf("status %i\n", data->exit_status);
 		exit_status = data->exit_status;

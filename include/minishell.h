@@ -62,6 +62,22 @@ void		error_exit(const char *message);
 char        **ft_split_quotes(const char *input, t_data *data);
 void		free_structure(t_data *command);
 
+// Парсер
+char	*handle_quotes(const char *str, int *i, t_data *data, char *result);
+char	*merge_tokens(char *first, char *second);
+char	*extract_quoted_token(const char *str, int *i, char quote_char);
+void	skip_spaces(const char *str, int *i);
+int	validate_quotes(const char *input);
+
+// Parcer redirections
+char	**realloc_array(char **array, char *new_element);
+void	handle_redir_file(t_cmd *cmd, char *token, int *redir_position,
+		int redir_type);
+void	handle_redirection(t_cmd *cmd, char **tokens, int *i,int *redir_position);
+void	handle_command_args(t_cmd *cmd, char **tokens, int *i, int *arg_idx);
+void	handle_here_docs(t_cmd *cmd, t_data *data);
+
+
 // Функции для работы с переменными окружения
 char	    *replace_env_var(char *input, t_data *data);
 char	    *replace_substring(char *str, int start, int end, char *replacement);

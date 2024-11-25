@@ -1,35 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/11/26 00:52:19 by artemii           #+#    #+#             */
+/*   Updated: 2024/11/26 00:52:19 by artemii          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 
 #include "../include/minishell.h"
-
-//void free_parsed_commands(t_command **commands)
-//{
-//    int i = 0;
-//    int j;
-
-//    // Освобождаем каждую команду в массиве
-//    while (commands[i])
-//    {
-//        // Освобождаем аргументы команды
-//        j = 0;
-//        while (commands[i]->args[j])
-//        {
-//            free(commands[i]->args[j]);
-//            j++;
-//        }
-//        free(commands[i]->args);  // Освобождаем сам массив аргументов
-
-//        // Освобождаем файлы для редиректа, если они существуют
-//        if (commands[i]->input_file)
-//            free(commands[i]->input_file);
-//        if (commands[i]->output_file)
-//            free(commands[i]->output_file);
-
-//        // Освобождаем саму структуру команды
-//        free(commands[i]);
-//        i++;
-//    }
-//    free(commands);  // Освобождаем массив структур
-//}
 
 char	*find_command(char *cmd, char **envp)
 {
@@ -63,6 +45,19 @@ void	error_exit(const char *message)
 {
 	perror(message);
 	exit(EXIT_FAILURE);
+}
+
+void	free_split(char **args)
+{
+	int	i;
+
+	i = 0;
+	while (args[i])
+	{
+		free(args[i]);
+		i++;
+	}
+	free(args);
 }
 
 
