@@ -7,6 +7,7 @@
 # include <stdio.h>
 # include <stdlib.h>
 # include <sys/types.h>
+# include <sys/stat.h>
 # include <sys/wait.h>
 # include <unistd.h>
 # include <signal.h>
@@ -48,6 +49,7 @@ typedef struct s_data
     int display_builtin_cmd;
     int	pipefd[2];
     int std_out;
+    int free_target_dir;
 } t_data;
 
 extern int g_pid;
@@ -71,6 +73,13 @@ char	    *get_env_value(char *name, t_data *data);
 int	update_or_add_var(t_data *data, char *new_var, char *key);
 void update_shlvl(t_data *data);
 
+ char	*handle_no_argument(t_data *data, char *old_pwd);
+ char	*handle_dash_argument(t_data *data, char *old_pwd);
+ char	*handle_tilde_argument(t_data *data, char *arg, char *old_pwd, int *free_target_dir);
+int	change_and_update_env(t_data *data, char *target_dir, char *old_pwd);
+int	change_directory(t_data *data, char *target_dir);
+int	update_environment(t_data *data, char *old_pwd);
+void	cd_exit(t_data *data, int status, char *message, char *to_free);
 
 
 
@@ -168,4 +177,19 @@ void	exit_eof(char *lim);
 void	exit_only_child(t_data *data, int status);
 void	error_fork(t_data *data);
 int     exit_open(t_data *data, int fd_out);
+
+void	check_dir(t_data *data, char *cmd);
+
+char	*replace_substring(char *str, int start, int end, char *replacement);
+char	*check_result(t_data *data, char *result, int i);
+char	*extract_var_name(const char *str);
+int	env_var_exists(const char *name, t_data *data);
+char	*get_env_value(char *name, t_data *data);
+char	*process_variable(char *result, int *i, t_data *data);
+char	*replace_env_var(char *input, t_data *data);
+
+void            take_dir(t_data *data, char *arg, char *old_pwd, char *target_dir);
+int             check_new_dir(t_data *data, char *old_pwd, char	*target_dir);
+void            cd(t_data *data, char *arg);
+
 #endif

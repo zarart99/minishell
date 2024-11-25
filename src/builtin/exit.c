@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/22 21:11:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/22 21:28:26 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/24 21:03:42 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,23 @@ void	check_isdigit(t_data *data)
 	}
 }
 
+void	select_exit(t_data *data, int status)
+{
+	int	last_exit;
+	int	flag;
+
+	flag = 0;
+	last_exit = data->exit_status;
+	if (data->cmd[data->i]->cmd_arg[1] != NULL)
+		flag = 1;
+	free_all_data(data);
+	rl_clear_history();
+	if (flag == 1)
+		exit(status);
+	else
+		exit(last_exit);
+}
+
 void	exit_total(t_data *data)
 {
 	int	status;
@@ -89,7 +106,5 @@ void	exit_total(t_data *data)
 		if (status < 0 || status > 255)
 			status = status % 256;
 	}
-	free_all_data(data);
-	rl_clear_history();
-	exit(status);
+	select_exit(data, status);
 }

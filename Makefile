@@ -23,6 +23,8 @@ SRCS = src/main.c\
 		src/builtin/print_envp.c \
 		src/builtin/unset_var.c \
 		src/builtin/cd.c \
+		src/builtin/cd_utils.c \
+		src/builtin/env_utils.c\
 		src/parcer_utils.c \
 		src/update_shlvl.c
 
