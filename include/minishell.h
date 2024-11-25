@@ -73,6 +73,13 @@ char	    *get_env_value(char *name, t_data *data);
 int	update_or_add_var(t_data *data, char *new_var, char *key);
 void update_shlvl(t_data *data);
 
+ char	*handle_no_argument(t_data *data, char *old_pwd);
+ char	*handle_dash_argument(t_data *data, char *old_pwd);
+ char	*handle_tilde_argument(t_data *data, char *arg, char *old_pwd, int *free_target_dir);
+int	change_and_update_env(t_data *data, char *target_dir, char *old_pwd);
+int	change_directory(t_data *data, char *target_dir);
+int	update_environment(t_data *data, char *old_pwd);
+void	cd_exit(t_data *data, int status, char *message, char *to_free);
 
 
 
