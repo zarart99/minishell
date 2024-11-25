@@ -68,6 +68,8 @@ void        export_var(t_data *data, const char *input);
 void	    print_env(t_data *data);
 void        cd(t_data *data, char *args);
 char	    *get_env_value(char *name, t_data *data);
+int	update_or_add_var(t_data *data, char *new_var, char *key);
+void update_shlvl(t_data *data);
 
 
 
