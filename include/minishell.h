@@ -95,6 +95,7 @@ void        cd(t_data *data, char *args);
 char	    *get_env_value(char *name, t_data *data);
 int	update_or_add_var(t_data *data, char *new_var, char *key);
 void update_shlvl(t_data *data);
+char	**copy_envp(char **envp);
 
  char	*handle_no_argument(t_data *data, char *old_pwd);
  char	*handle_dash_argument(t_data *data, char *old_pwd);
@@ -149,6 +150,9 @@ int         check_files(t_data *data, int flag);
 int         redirection_output(t_data *data, int fd_out);
 
 void        ft_redirection_out_pipe(t_data *data);       //Переадресация из команды в пайп
+void	reset_data_flags(t_data *data);
+void	handle_pid_status(t_data *data, int *exit_status);
+
 
 /*Блок для корректного выхода из процесса из за ошибок */
 void	free_fault_execve(char *cmd, t_data *data);
@@ -166,6 +170,8 @@ void	free_data(t_data *data); //Этой функции больше нет?
 
 //Сигналы
 void    handle_sigint(int sig);
+void	handle_signals(void);
+
 
 //Наши функции 
 void	execute_builtin_command(t_data *data);

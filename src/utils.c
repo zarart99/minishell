@@ -6,13 +6,71 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:52:19 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/26 01:36:23 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/26 02:02:38 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-char	*find_command(char *cmd, char **envp)
+void	error_exit(const char *message)
+{
+	perror(message);
+	exit(EXIT_FAILURE);
+}
+
+char	**copy_envp(char **envp)
+{
+	int		i;
+	int		count;
+	char	**new_envp;
+
+	count = 0;
+	while (envp[count] != NULL)
+		count++;
+	new_envp = malloc(sizeof(char *) * (count + 1));
+	if (!new_envp)
+		return (NULL);
+	i = 0;
+	while (i < count)
+	{
+		new_envp[i] = ft_strdup(envp[i]);
+		if (!new_envp[i])
+		{
+			while (--i >= 0)
+				free(new_envp[i]);
+			free(new_envp);
+			return (NULL);
+		}
+		i++;
+	}
+	new_envp[count] = NULL;
+	return (new_envp);
+}
+
+void	handle_signals(void)
+{
+	signal(SIGINT, handle_sigint);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+void	reset_data_flags(t_data *data)
+{
+	data->back_in_main = 0;
+	data->builtin_cmd = 0;
+	data->display_builtin_cmd = 0;
+}
+
+void	handle_pid_status(t_data *data, int *exit_status)
+{
+	if (g_pid == -50)
+	{
+		data->exit_status = 130;
+		*exit_status = 130;
+		g_pid = -1;
+	}
+}
+
+/*char	*find_command(char *cmd, char **envp)
 {
 	char	**paths;
 	char	*path;
@@ -39,9 +97,4 @@ char	*find_command(char *cmd, char **envp)
 	}
 	free_split(paths);
 	return (NULL);
-}
-void	error_exit(const char *message)
-{
-	perror(message);
-	exit(EXIT_FAILURE);
-}
+} */

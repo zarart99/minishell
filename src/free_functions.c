@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 01:01:36 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/26 01:36:33 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/26 02:36:33 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,11 +87,11 @@ void	free_all_data(t_data *data)
 	if (data)
 	{
 		if (data->cmd != NULL)
-			free_data_cmd(data); // Освобождаем команды и связанные строки
+			free_data_cmd(data);
 		if (data->envp != NULL)
-			free_split(data->envp); // Освобождаем переменные окружения
+			free_split(data->envp);
 		if (data->user_input != NULL)
 			free(data->user_input);
-		free(data); // Освобождаем структуру data
+		free(data);
 	}
 }
