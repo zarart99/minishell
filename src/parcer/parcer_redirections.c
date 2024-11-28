@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:47:10 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/27 23:39:00 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/28 15:17:09 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,12 @@ char	**realloc_array(char **array, char *new_element)
 	return (new_array);
 }
 
-void	update_redirection(char **target_file, char ***file_array, char *token,
-		int *position)
+void	update_redirection(char **target_file, char ***file_array, char *token)
 {
 	if (*target_file)
 		free(*target_file);
 	*target_file = ft_strdup(token);
 	*file_array = realloc_array(*file_array, ft_strdup(token));
-	(*position)++;
 }
 
 void	handle_redirection(t_cmd *cmd, char **tokens, int *i,
@@ -56,26 +54,27 @@ void	handle_redirection(t_cmd *cmd, char **tokens, int *i,
 	if (ft_strcmp(tokens[*i], "<") == 0)
 	{
 		(*i)++;
-		update_redirection(&cmd->input_file, &cmd->input_files, tokens[*i],
-			redir_position);
+		cmd->pos_input = (*redir_position)++;
+		update_redirection(&cmd->input_file, &cmd->input_files, tokens[*i]);
 	}
 	else if (ft_strcmp(tokens[*i], ">") == 0)
 	{
 		(*i)++;
-		update_redirection(&cmd->output_file, &cmd->output_files, tokens[*i],
-			redir_position);
+		cmd->pos_output = (*redir_position)++;
+		update_redirection(&cmd->output_file, &cmd->output_files, tokens[*i]);
 	}
 	else if (ft_strcmp(tokens[*i], ">>") == 0)
 	{
 		(*i)++;
-		update_redirection(&cmd->append_file, &cmd->append_files, tokens[*i],
-			redir_position);
+		cmd->pos_append = (*redir_position)++;
+		update_redirection(&cmd->append_file, &cmd->append_files, tokens[*i]);
 	}
 	else if (ft_strcmp(tokens[*i], "<<") == 0)
 	{
 		(*i)++;
+		cmd->pos_here_doc = (*redir_position)++;
 		update_redirection(&cmd->here_doc_file, &cmd->here_doc_files,
-			tokens[*i], redir_position);
+			tokens[(*i)]);
 	}
 }
 
