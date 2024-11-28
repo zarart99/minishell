@@ -2,7 +2,7 @@ NAME = minishell
 CC = cc
 CFLAGS = -Wall -Wextra -Werror
 SRCS = src/main.c\
-		src/parser.c\
+		src/parcer/parser.c\
 		src/utils.c\
 		src/exec/execution.c\
 		src/exec/execution_cmd_simp.c\
@@ -25,8 +25,11 @@ SRCS = src/main.c\
 		src/builtin/cd.c \
 		src/builtin/cd_utils.c \
 		src/builtin/env_utils.c\
-		src/parcer_utils.c \
-		src/update_shlvl.c
+		src/parcer/parcer_utils.c \
+		src/parcer/parcer_utils_2.c \
+		src/parcer/parcer_redirections.c \
+		src/update_shlvl.c \
+		src/free_functions.c
 
 OBJS = $(SRCS:.c=.o)
 LIBFT = libft/libft.a
