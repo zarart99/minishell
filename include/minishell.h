@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 15:23:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/26 15:41:26 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/29 06:28:05 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ typedef struct s_data
 	int		free_target_dir;
 }	t_data;
 
-extern int	g_pid;
+extern int	g_sig;
 
 void	parse_pipeline(t_data *command, char *input);
 void	free_parsed_commands(t_data **commands);
@@ -143,7 +143,6 @@ int		check_files(t_data *data, int flag);
 int		redirection_output(t_data *data, int fd_out);
 void	ft_redirection_out_pipe(t_data *data);
 void	reset_data_flags(t_data *data);
-void	handle_pid_status(t_data *data, int *exit_status);
 void	free_fault_execve(char *cmd, t_data *data);
 void	ft_free_strs(char **strs);
 void	ft_error_exit(int nb);
@@ -154,8 +153,11 @@ void	free_error_cmd(t_data *data);
 void	error_open_outfile(int flag, t_data *data);
 void	free_data(t_data *data);
 
-void	handle_sigint(int sig);
+void	handle_sigint_newline(int sig);
+void	handle_sigint_status(t_data *data, int *exit_status);
 void	handle_signals(void);
+void	handle_sigint_heredoc(int sig);
+int		exit_open(t_data *data, int fd_out);
 
 void	execute_builtin_command(t_data *data);
 void	check_builtin_command(t_data *data);
@@ -179,7 +181,6 @@ void	close_here_doc_pfd(int fd);
 void	exit_eof(char *lim);
 void	exit_only_child(t_data *data, int status);
 void	error_fork(t_data *data);
-int		exit_open(t_data *data, int fd_out);
 void	check_dir(t_data *data, char *cmd);
 char	*replace_substring(char *str, int start, int end, char *replacement);
 char	*check_result(t_data *data, char *result, int i);
