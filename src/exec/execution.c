@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:06:33 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/24 22:52:56 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/29 02:19:39 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ void	ft_launch_cmd(t_data *data)
 	if (cmd == NULL)
 		free_error_cmd(data);
 	check_dir(data, cmd);
+	close_other_fd(data);
 	if (execve(cmd, data->cmd[data->i]->cmd_arg, data->envp) == -1)
 		free_fault_execve(cmd, data);
 }

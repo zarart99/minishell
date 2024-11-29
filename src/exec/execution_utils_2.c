@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 04:19:01 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/25 01:21:43 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/29 02:22:26 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,4 +65,17 @@ void	wait_processes(t_data *data)
 		pid = waitpid(-1, &status, 0);
 	}
 	g_pid = -1;
+}
+
+void	close_other_fd(t_data *data)
+{
+	int	i_2;
+
+	i_2 = 0;
+	while (data->cmd[i_2] != NULL)
+	{
+		if (data->cmd[i_2]->here_doc_pfd != 0)
+			close(data->cmd[i_2]->here_doc_pfd);
+		i_2++;
+	}
 }

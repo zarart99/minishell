@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 15:23:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/26 15:41:26 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/11/29 02:20:19 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,4 +191,5 @@ char	*replace_env_var(char *input, t_data *data);
 void	take_dir(t_data *data, char *arg, char *old_pwd, char *target_dir);
 int		check_new_dir(t_data *data, char *old_pwd, char	*target_dir);
 void	cd(t_data *data, char *arg);
+void	close_other_fd(t_data *data);
 #endif
