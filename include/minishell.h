@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 15:23:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/30 20:23:35 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/30 22:53:12 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,8 @@ int		validate_quotes(const char *input);
 char	**realloc_array(char **array, char *new_element);
 void	handle_redir_file(t_cmd *cmd, char *token,
 			int *redir_position, int redir_type);
-void	handle_redirection(t_cmd *cmd, char **tokens,
-			int *i, int *redir_position);
+int	handle_redirection(t_cmd *cmd, char *redir, char *after,
+		int *redir_pos);
 void	handle_command_args(t_cmd *cmd, char **tokens, int *i, int *arg_idx);
 void	handle_here_docs(t_cmd *cmd, t_data *data);
 char	*replace_env_var(char *input, t_data *data);
@@ -192,7 +192,9 @@ char	*replace_env_var(char *input, t_data *data);
 void	take_dir(t_data *data, char *arg, char *old_pwd, char *target_dir);
 int		check_new_dir(t_data *data, char *old_pwd, char	*target_dir);
 void	cd(t_data *data, char *arg);
-void process_redirection_token(t_cmd *cmd, char *token, int *redir_position, int *i, char **tokens, int *arg_idx);
-int	has_redirection(const char *token);
+
+void	process_redirection_token(t_cmd *cmd, char *token, int *redir_position,
+		int *i, char **tokens, int *arg_idx);
+		int	has_redirection(const char *token);
 
 #endif
