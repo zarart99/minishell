@@ -6,47 +6,37 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:47:05 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/30 22:52:50 by artemii          ###   ########.fr       */
+/*   Updated: 2024/12/01 00:09:21 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void process_tokens(t_cmd *cmd, char **tokens)
+void	process_tokens(t_cmd *cmd, char **tokens)
 {
 	int	i;
-	int	arg_idx;
-	int	redir_position;
 
 	i = 0;
-	arg_idx = 0;
-	redir_position = 1;
-
+	cmd->arg_idx = 0;
+	cmd->rd_idx = 1;
 	while (tokens[i] != NULL)
 	{
 		if (has_redirection(tokens[i]))
 		{
-			process_redirection_token(cmd, tokens[i], &redir_position, &i, tokens, &arg_idx);
+			process_redirection_token(cmd, tokens[i], &i,
+				tokens);
 		}
 		else
-		{
-			handle_command_args(cmd, tokens, &i, &arg_idx);
-		}
+			handle_command_args(cmd, tokens, &i);
 		i++;
 		if (cmd->error_code == 2)
-			return;
+			return ;
 	}
-
-	// Завершаем массив аргументов
-	if (arg_idx > 0)
-		cmd->cmd_arg[arg_idx] = NULL;
+	if (cmd->arg_idx > 0)
+		cmd->cmd_arg[cmd->arg_idx] = NULL;
 	else
 		cmd->cmd_arg = NULL;
 }
-
-
-
-
 
 void	parse_single_command(t_cmd *cmd, char *input, t_data *data)
 {
@@ -57,7 +47,7 @@ void	parse_single_command(t_cmd *cmd, char *input, t_data *data)
 		return ;
 	process_tokens(cmd, tokens);
 	free_split(tokens);
-	if (cmd-> error_code)
+	if (cmd->error_code)
 	{
 		data->back_in_main = 1;
 		data->exit_status = cmd->error_code;
@@ -89,9 +79,10 @@ static int	initialize_pipeline(t_data *data, char *input,
 		free_split(*command_tokens);
 		return (-1);
 	}
-	for (int i = 0; i <= cmd_count; i++) {
-    data->cmd[i] = NULL;
-}
+	for (int i = 0; i <= cmd_count; i++)
+	{
+		data->cmd[i] = NULL;
+	}
 	data->cmd[cmd_count] = NULL;
 	data->nb_pipe = cmd_count - 1;
 	return (cmd_count);
@@ -134,6 +125,5 @@ void	parse_pipeline(t_data *data, char *input)
 	process_pipeline_commands(data, command_tokens, cmd_count);
 	free_split(command_tokens);
 	if (data->back_in_main == 1)
-		return;
- 
+		return ;
 }

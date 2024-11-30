@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/30 22:49:47 by artemii          ###   ########.fr       */
+/*   Updated: 2024/12/01 01:05:11 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ static void	parse_and_execute(t_data *data, int *exit_status)
 		free(data->user_input);
 		return ;
 	}
-	print_commands(data);
+	//print_commands(data);
 	execute_pipeline(data, exit_status);
 }
 
