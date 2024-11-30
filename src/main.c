@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/26 02:36:50 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/29 02:36:38 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ static void	parse_and_execute(t_data *data, int *exit_status)
 		free(data->user_input);
 		return ;
 	}
+	print_commands(data);
 	execute_pipeline(data, exit_status);
 }
 
@@ -95,7 +96,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	return (0);
 }
-/*
+
 void	print_commands(t_data *data)
 {
 	int	i;
@@ -189,4 +190,4 @@ void	print_commands(t_data *data)
 		i++;
 	}
 }
-*/
+

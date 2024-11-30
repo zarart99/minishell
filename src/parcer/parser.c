@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:47:05 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/26 00:51:20 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/29 03:30:15 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,17 @@ void	process_tokens(t_cmd *cmd, char **tokens)
 	i = 0;
 	arg_idx = 0;
 	redir_position = 1;
+
 	while (tokens[i] != NULL)
 	{
-		if (ft_strcmp(tokens[i], "<") == 0 || ft_strcmp(tokens[i], ">") == 0
-			|| ft_strcmp(tokens[i], ">>") == 0 || ft_strcmp(tokens[i],
-				"<<") == 0)
-			handle_redirection(cmd, tokens, &i, &redir_position);
+		if (has_redirection(tokens[i]))
+		{
+			process_redirection_token(cmd, tokens[i], &redir_position, &i, tokens);
+		}
 		else
+		{
 			handle_command_args(cmd, tokens, &i, &arg_idx);
+		}
 		i++;
 	}
 	if (arg_idx == 0)
@@ -39,6 +42,8 @@ void	process_tokens(t_cmd *cmd, char **tokens)
 	else
 		cmd->cmd_arg[arg_idx] = NULL;
 }
+
+
 
 void	parse_single_command(t_cmd *cmd, char *input, t_data *data)
 {
