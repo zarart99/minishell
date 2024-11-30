@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 15:23:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/29 03:29:54 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/30 20:23:35 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct s_cmd
 	char	**append_files;
 	char	**here_doc_files;
 	char	**input_files;
+	int		error_code;
 }	t_cmd;
 
 typedef struct s_data
@@ -191,7 +192,7 @@ char	*replace_env_var(char *input, t_data *data);
 void	take_dir(t_data *data, char *arg, char *old_pwd, char *target_dir);
 int		check_new_dir(t_data *data, char *old_pwd, char	*target_dir);
 void	cd(t_data *data, char *arg);
-void	process_redirection_token(t_cmd *cmd, char *token, int *redir_position, int *i, char **tokens);
+void process_redirection_token(t_cmd *cmd, char *token, int *redir_position, int *i, char **tokens, int *arg_idx);
 int	has_redirection(const char *token);
 
 #endif

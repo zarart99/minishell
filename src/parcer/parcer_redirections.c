@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:47:10 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/30 16:39:56 by artemii          ###   ########.fr       */
+/*   Updated: 2024/11/30 21:22:55 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int	has_redirection(const char *token)
 }
 
 // Разделяет токен на части: аргумент, редирекцию, файл
-void	split_token_on_redirection(char *token, char **before, char **redir, char **after)
+void split_token_on_redirection(char *token, char **before, char **redir, char **after)
 {
 	int		i;
 
@@ -86,14 +86,17 @@ void	split_token_on_redirection(char *token, char **before, char **redir, char *
 	{
 		*before = ft_strdup(token); // Если редирекции нет, весь токен в before
 	}
+
+	// Логируем разделение токена
+	ft_printf("DEBUG: split_token_on_redirection: token='%s', before='%s', redir='%s', after='%s'\n",
+		token,
+		*before ? *before : "(null)",
+		*redir ? *redir : "(null)",
+		*after ? *after : "(null)");
 }
 
-
-
-
-
 // Обрабатывает токен, содержащий редирекцию
-void	process_redirection_token(t_cmd *cmd, char *token, int *redir_position, int *i, char **tokens)
+void process_redirection_token(t_cmd *cmd, char *token, int *redir_position, int *i, char **tokens, int *arg_idx)
 {
 	char	*before = NULL;
 	char	*redir = NULL;
@@ -101,31 +104,46 @@ void	process_redirection_token(t_cmd *cmd, char *token, int *redir_position, int
 
 	if (!token) // Проверяем на NULL
 		return;
-
 	split_token_on_redirection(token, &before, &redir, &after);
+
+if (before && *before != '\0') {
+    if (!cmd->cmd_arg) {
+        cmd->cmd_arg = malloc(sizeof(char *) * 100);
+        if (!cmd->cmd_arg)
+            return;
+        ft_bzero(cmd->cmd_arg, sizeof(char *) * 100);
+    }
+    cmd->cmd_arg[*arg_idx] = ft_strdup(before);
+    ft_printf("DEBUG: Added 'before' to cmd_arg[%d]: %s\n", *arg_idx, before);
+    (*arg_idx)++;
+}
+
 
 	// Если `after` пустой, берем следующий токен
 	if (redir && (!after || *after == '\0'))
-{
-    if (tokens[*i + 1]) // Сначала проверяем, существует ли следующий токен
-    {
-        (*i)++; // Увеличиваем индекс только если следующий токен существует
-        after = ft_strdup(tokens[*i]); // Копируем следующий токен
-    }
-    else
-    {
-        // Ошибка: нет файла после редирекции
-        ft_printf("Error: missing file for redirection '%s'\n", redir);
-        free(before);
-        free(redir);
-        exit(2); // Выходим, чтобы не обрабатывать NULL
-    }
-}
-
+	{
+		if (tokens[*i + 1]) // Проверяем существование следующего токена
+		{
+			(*i)++; // Переходим к следующему токену
+			after = ft_strdup(tokens[*i]); // Копируем следующий токен
+			//ft_printf("DEBUG: Taking next token as 'after': %s\n", after);
+		}
+		else
+		{
+			// Ошибка: нет файла после редирекции
+			ft_printf("Error: missing file for redirection '%s'\n", redir);
+			free(before);
+			free(redir);
+			free(after);
+			cmd->error_code = 2;
+			return;
+		}
+	}
 
 	// Обрабатываем редирекцию
 	if (redir)
 	{
+		//ft_printf("DEBUG: Processing redirection '%s' with file '%s'\n", redir, after);
 		if (ft_strcmp(redir, "<") == 0)
 		{
 			cmd->pos_input = (*redir_position)++;
@@ -148,12 +166,6 @@ void	process_redirection_token(t_cmd *cmd, char *token, int *redir_position, int
 		}
 	}
 
-	// Добавляем "before" в аргументы, если существует
-	if (before && *before != '\0')
-	{
-		handle_command_args(cmd, &before, NULL, redir_position); // Передаем before как аргумент
-	}
-
 	// Освобождаем временные строки
 	free(before);
 	free(redir);
@@ -162,13 +174,14 @@ void	process_redirection_token(t_cmd *cmd, char *token, int *redir_position, int
 
 
 
-void	handle_command_args(t_cmd *cmd, char **tokens, int *i, int *arg_idx)
+void handle_command_args(t_cmd *cmd, char **tokens, int *i, int *arg_idx)
 {
 	int	j;
 
 	if (!cmd || !tokens || (i && !tokens[*i])) // Проверяем входные параметры
 		return;
 
+	// Инициализируем массив аргументов, если он ещё не создан
 	if (cmd->cmd_arg == NULL)
 	{
 		cmd->cmd_arg = malloc(sizeof(char *) * 100);
@@ -184,15 +197,17 @@ void	handle_command_args(t_cmd *cmd, char **tokens, int *i, int *arg_idx)
 			cmd->cmd_arg = NULL;
 			return;
 		}
+		//ft_printf("DEBUG: Initialized cmd_arg and set cmd: %s\n", cmd->cmd);
 	}
 
-	// Убедимся, что `tokens[*i]` валидный перед копированием
+	// Добавляем токен как аргумент
 	if (i && tokens[*i])
-		cmd->cmd_arg[(*arg_idx)++] = ft_strdup(tokens[*i]);
+	{
+		cmd->cmd_arg[*arg_idx] = ft_strdup(tokens[*i]);
+		//ft_printf("DEBUG: Added token to cmd_arg[%d]: %s\n", *arg_idx, tokens[*i]);
+		(*arg_idx)++;
+	}
 }
-
-
-
 
 
 void	handle_here_docs(t_cmd *cmd, t_data *data)
