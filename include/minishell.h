@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 15:23:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/26 15:41:26 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/12/01 17:44:17 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,9 @@ typedef struct s_cmd
 	char	**append_files;
 	char	**here_doc_files;
 	char	**input_files;
+	int		error_code;
+	int		agr_idx;
+	int		rd_idx;
 }	t_cmd;
 
 typedef struct s_data
@@ -84,9 +87,9 @@ int		validate_quotes(const char *input);
 char	**realloc_array(char **array, char *new_element);
 void	handle_redir_file(t_cmd *cmd, char *token,
 			int *redir_position, int redir_type);
-void	handle_redirection(t_cmd *cmd, char **tokens,
-			int *i, int *redir_position);
-void	handle_command_args(t_cmd *cmd, char **tokens, int *i, int *arg_idx);
+int	handle_redirection(t_cmd *cmd, char *redir, char *after,
+		int *redir_pos);
+void	handle_command_args(t_cmd *cmd, char **tokens, int *i);
 void	handle_here_docs(t_cmd *cmd, t_data *data);
 char	*replace_env_var(char *input, t_data *data);
 char	*replace_substring(char *str, int start, int end, char *replacement);
@@ -191,4 +194,14 @@ char	*replace_env_var(char *input, t_data *data);
 void	take_dir(t_data *data, char *arg, char *old_pwd, char *target_dir);
 int		check_new_dir(t_data *data, char *old_pwd, char	*target_dir);
 void	cd(t_data *data, char *arg);
+
+
+void	process_redirection_token(t_cmd *cmd, char *token, int *i,
+		char **tokens);
+void	free_temp_redir(char *before, char *redir, char *after);
+void	handle_missing_after(t_cmd *cmd, char *before, char *redir, char *after);
+void	handle_before_token(t_cmd *cmd, char *before);
+void	update_redirection(char **target_file, char ***file_array, char *token);
+void	handle_redir_token(t_cmd *cmd, char *after, char *redir);
+
 #endif
