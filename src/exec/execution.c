@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:06:33 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/12/01 15:14:31 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/12/01 15:42:47 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,35 +35,18 @@ void	ft_launch_cmd(t_data *data)
 		free_fault_execve(cmd, data);
 }
 
-void	manage_fd(t_data *data, int pid)
-{
-	if (data->cmd[data->i]->here_doc_pfd != 0)
-	{
-		close(data->cmd[data->i]->here_doc_pfd);
-		data->cmd[data->i]->here_doc_pfd = 0;
-	}
-	data->flag_pipe = 0;
-	if (data->prev_pipe != -1)
-		close(data->prev_pipe);
-	if (data->i != data->nb_pipe)
-		close(data->pipefd[1]);
-	if (data->i == data->nb_pipe)
-		data->prev_pipe = pid;
-	else
-		data->prev_pipe = data->pipefd[0];
-}
-
-void sig_upd(int sig)
+void	sig_upd(int sig)
 {
 	g_sig = sig;
 }
 
-void child_handler(int sig)
+void	child_handler(int sig)
 {
 	g_sig = sig;
 	write(1, "\n", 1);
 	exit(130);
 }
+
 void	execution_cmd(t_data *data)
 {
 	int	pid;
