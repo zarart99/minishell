@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/11/30 22:49:47 by artemii          ###   ########.fr       */
+/*   Updated: 2024/12/01 17:47:31 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ static void	parse_and_execute(t_data *data, int *exit_status)
 		free(data->user_input);
 		return ;
 	}
-	print_commands(data);
 	execute_pipeline(data, exit_status);
 }
 
@@ -96,7 +95,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	return (0);
 }
-
+/*
 void	print_commands(t_data *data)
 {
 	int	i;
@@ -121,13 +120,11 @@ void	print_commands(t_data *data)
 		}
 		else
 			ft_printf("  cmd_arg: (null)\n");
-
 		// Print positions
 		ft_printf("  pos_input: %d\n", data->cmd[i]->pos_input);
 		ft_printf("  pos_output: %d\n", data->cmd[i]->pos_output);
 		ft_printf("  pos_append: %d\n", data->cmd[i]->pos_append);
 		ft_printf("  pos_here_doc: %d\n", data->cmd[i]->pos_here_doc);
-
 		// Final input, output, append, and here_doc files
 		if (data->cmd[i]->input_file)
 			ft_printf("  final_input: %s\n", data->cmd[i]->input_file);
@@ -146,7 +143,6 @@ void	print_commands(t_data *data)
 				data->cmd[i]->here_doc_file);
 		else
 			ft_printf("  final_here_doc_file: (null)\n");
-
 		// Print arrays of files
 		if (data->cmd[i]->input_files)
 		{
@@ -196,9 +192,7 @@ void	print_commands(t_data *data)
 		}
 		else
 			ft_printf("  here_doc_files: (null)\n");
-
 		i++;
 	}
 }
-
-
+*/
