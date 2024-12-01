@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
+/*   By: azakharo <azakharo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:47:05 by artemii           #+#    #+#             */
-/*   Updated: 2024/12/01 17:49:28 by artemii          ###   ########.fr       */
+/*   Updated: 2024/12/01 14:25:57 by azakharo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,13 @@ void	process_tokens(t_cmd *cmd, char **tokens)
 	cmd->rd_idx = 1;
 	while (tokens[i] != NULL)
 	{
-		if (ft_strchr(tokens[i], '<') != NULL || ft_strchr(tokens[i],
-				'>') != NULL)
-		{
-			process_redirection_token(cmd, tokens[i], &i, tokens);
-		}
-		else
-		{
+		if (ft_strchr(tokens[i], ' ') != NULL)
 			handle_command_args(cmd, tokens, &i);
-		}
+		else if (ft_strchr(tokens[i], '<') != NULL || ft_strchr(tokens[i],
+				'>') != NULL)
+			process_redirection_token(cmd, tokens[i], &i, tokens);
+		else
+			handle_command_args(cmd, tokens, &i);
 		i++;
 		if (cmd->error_code == 2)
 			return ;
@@ -64,12 +62,6 @@ static int	initialize_pipeline(t_data *data, char *input,
 	int	cmd_count;
 	int	i;
 
-	if (!validate_quotes(input))
-	{
-		data->back_in_main = 1;
-		ft_printf("Error: unclosed quotes\n");
-		return (-1);
-	}
 	*command_tokens = ft_split(input, '|');
 	if (!(*command_tokens))
 		return (-1);
@@ -121,6 +113,13 @@ void	parse_pipeline(t_data *data, char *input)
 	char	**command_tokens;
 	int		cmd_count;
 
+	if (!validate_quotes(input))
+	{
+		data->back_in_main = 1;
+		data->exit_status = 1;
+		ft_printf("Error: unclosed quotes\n");
+		return ;
+	}
 	cmd_count = initialize_pipeline(data, input, &command_tokens);
 	if (cmd_count == -1)
 		return ;
