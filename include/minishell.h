@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 15:23:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/12/01 17:44:17 by artemii          ###   ########.fr       */
+/*   Updated: 2024/12/01 15:07:51 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # include <unistd.h>
 # include <signal.h>
 # include <limits.h>
+# include <errno.h>
 
 typedef struct s_cmd
 {
@@ -42,9 +43,6 @@ typedef struct s_cmd
 	char	**append_files;
 	char	**here_doc_files;
 	char	**input_files;
-	int		error_code;
-	int		agr_idx;
-	int		rd_idx;
 }	t_cmd;
 
 typedef struct s_data
@@ -66,7 +64,7 @@ typedef struct s_data
 	int		free_target_dir;
 }	t_data;
 
-extern int	g_pid;
+extern int	g_sig;
 
 void	parse_pipeline(t_data *command, char *input);
 void	free_parsed_commands(t_data **commands);
@@ -87,9 +85,9 @@ int		validate_quotes(const char *input);
 char	**realloc_array(char **array, char *new_element);
 void	handle_redir_file(t_cmd *cmd, char *token,
 			int *redir_position, int redir_type);
-int	handle_redirection(t_cmd *cmd, char *redir, char *after,
-		int *redir_pos);
-void	handle_command_args(t_cmd *cmd, char **tokens, int *i);
+void	handle_redirection(t_cmd *cmd, char **tokens,
+			int *i, int *redir_position);
+void	handle_command_args(t_cmd *cmd, char **tokens, int *i, int *arg_idx);
 void	handle_here_docs(t_cmd *cmd, t_data *data);
 char	*replace_env_var(char *input, t_data *data);
 char	*replace_substring(char *str, int start, int end, char *replacement);
@@ -146,7 +144,6 @@ int		check_files(t_data *data, int flag);
 int		redirection_output(t_data *data, int fd_out);
 void	ft_redirection_out_pipe(t_data *data);
 void	reset_data_flags(t_data *data);
-void	handle_pid_status(t_data *data, int *exit_status);
 void	free_fault_execve(char *cmd, t_data *data);
 void	ft_free_strs(char **strs);
 void	ft_error_exit(int nb);
@@ -157,8 +154,16 @@ void	free_error_cmd(t_data *data);
 void	error_open_outfile(int flag, t_data *data);
 void	free_data(t_data *data);
 
-void	handle_sigint(int sig);
+void	handle_sigint_newline(int sig);
+void	handle_sigint_status(t_data *data, int *exit_status);
 void	handle_signals(void);
+void	handle_sigint_heredoc(int sig);
+
+void child_handler(int sig);
+void sig_upd(int sig);
+int	check_cmd(t_data *data);
+
+int		exit_open(t_data *data, int fd_out);
 
 void	execute_builtin_command(t_data *data);
 void	check_builtin_command(t_data *data);
@@ -182,7 +187,6 @@ void	close_here_doc_pfd(int fd);
 void	exit_eof(char *lim);
 void	exit_only_child(t_data *data, int status);
 void	error_fork(t_data *data);
-int		exit_open(t_data *data, int fd_out);
 void	check_dir(t_data *data, char *cmd);
 char	*replace_substring(char *str, int start, int end, char *replacement);
 char	*check_result(t_data *data, char *result, int i);
@@ -194,14 +198,4 @@ char	*replace_env_var(char *input, t_data *data);
 void	take_dir(t_data *data, char *arg, char *old_pwd, char *target_dir);
 int		check_new_dir(t_data *data, char *old_pwd, char	*target_dir);
 void	cd(t_data *data, char *arg);
-
-
-void	process_redirection_token(t_cmd *cmd, char *token, int *i,
-		char **tokens);
-void	free_temp_redir(char *before, char *redir, char *after);
-void	handle_missing_after(t_cmd *cmd, char *before, char *redir, char *after);
-void	handle_before_token(t_cmd *cmd, char *before);
-void	update_redirection(char **target_file, char ***file_array, char *token);
-void	handle_redir_token(t_cmd *cmd, char *after, char *redir);
-
 #endif

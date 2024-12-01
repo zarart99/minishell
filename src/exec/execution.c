@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/14 00:06:33 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/24 22:52:56 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/12/01 15:14:31 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	ft_launch_cmd(t_data *data)
 {
 	char	*cmd;
 
-	signal(SIGQUIT, SIG_DFL);
+	signal(SIGQUIT, sig_upd);
 	redirection(data);
 	execute_builtin_command(data);
 	if (data->cmd[data->i]->cmd == NULL)
@@ -53,12 +53,24 @@ void	manage_fd(t_data *data, int pid)
 		data->prev_pipe = data->pipefd[0];
 }
 
+void sig_upd(int sig)
+{
+	g_sig = sig;
+}
+
+void child_handler(int sig)
+{
+	g_sig = sig;
+	write(1, "\n", 1);
+	exit(130);
+}
 void	execution_cmd(t_data *data)
 {
 	int	pid;
 
 	while (data->i <= data->nb_pipe)
 	{
+		signal(SIGINT, sig_upd);
 		if (data->i != data->nb_pipe && pipe(data->pipefd) == -1)
 		{
 			write(2, "ERROR: pipe\n", 12);
@@ -73,8 +85,6 @@ void	execution_cmd(t_data *data)
 		}
 		if (pid == 0)
 			ft_launch_cmd(data);
-		else
-			g_pid = pid;
 		manage_fd(data, pid);
 		data->i++;
 	}
