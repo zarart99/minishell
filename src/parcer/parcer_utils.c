@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parcer_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: azakharo <azakharo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:04:11 by artemii           #+#    #+#             */
-/*   Updated: 2024/12/01 16:23:25 by azakharo         ###   ########.fr       */
+/*   Updated: 2024/12/04 02:24:49 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,12 @@ char	*handle_variable(const char *str, int *i, t_data *data, char *result)
 	var = NULL;
 	expanded = NULL;
 	(*i)++;
-	if (str[*i] == '\0' || str[*i] == ' ' || str[*i] == '$')
+	if (str[*i] == '\0' || str[*i] == ' ')
 		expanded = ft_strdup("$");
+	else if (str[*i] == '$')
+		expanded = handle_variable(str, i, data, result);
+	else if (str[*i] == '\'' || str[*i] == '"')
+		expanded = handle_quotes(str, i, data, result);
 	else if (str[(*i)++] == '?')
 		expanded = ft_itoa(data->exit_status);
 	else
