@@ -6,7 +6,7 @@
 /*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 04:50:13 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/24 17:55:05 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/12/04 03:34:42 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void	check_builtin_command(t_data *data)
 
 void	redirection_builtin_command(t_data *data)
 {
+	check_path(data);
 	if (data->cmd[data->i]->pos_here_doc > data->cmd[data->i]->pos_input)
 	{
 		ft_redirection_here_doc(data);
@@ -103,7 +104,7 @@ void	launch_func_builtin(t_data *data)
 		else
 		{
 			if (data->cmd[data->i]->cmd_arg[1] == NULL)
-				cd(data, NULL); // Если аргумент отсутствует
+				cd(data, NULL);
 			else
 				cd(data, data->cmd[data->i]->cmd_arg[1]);
 		}
