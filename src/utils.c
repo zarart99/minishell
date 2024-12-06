@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:52:19 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/26 02:02:38 by artemii          ###   ########.fr       */
+/*   Updated: 2024/12/01 10:29:09 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ char	**copy_envp(char **envp)
 
 void	handle_signals(void)
 {
-	signal(SIGINT, handle_sigint);
+	signal(SIGINT, handle_sigint_newline);
 	signal(SIGQUIT, SIG_IGN);
 }
 
@@ -60,41 +60,12 @@ void	reset_data_flags(t_data *data)
 	data->display_builtin_cmd = 0;
 }
 
-void	handle_pid_status(t_data *data, int *exit_status)
+void	handle_sigint_status(t_data *data, int *exit_status)
 {
-	if (g_pid == -50)
+	if (g_sig == 2)
 	{
 		data->exit_status = 130;
 		*exit_status = 130;
-		g_pid = -1;
+		g_sig = 0;
 	}
 }
-
-/*char	*find_command(char *cmd, char **envp)
-{
-	char	**paths;
-	char	*path;
-	char	*cmd_path;
-	int		i;
-
-	while (*envp && ft_strncmp("PATH=", *envp, 5) != 0)
-		envp++;
-	if (!*envp)
-		return (NULL);
-	paths = ft_split(*envp + 5, ':');
-	i = -1;
-	while (paths[++i])
-	{
-		path = ft_strjoin(paths[i], "/");
-		cmd_path = ft_strjoin(path, cmd);
-		free(path);
-		if (access(cmd_path, F_OK | X_OK) == 0)
-		{
-			free_split(paths);
-			return (cmd_path);
-		}
-		free(cmd_path);
-	}
-	free_split(paths);
-	return (NULL);
-} */

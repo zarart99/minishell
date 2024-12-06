@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:17:29 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/26 00:52:43 by artemii          ###   ########.fr       */
+/*   Updated: 2024/12/07 02:02:03 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,16 @@ char	*merge_tokens(char *first, char *second)
 	char	*merged;
 
 	merged = ft_strjoin(first, second);
-	free(first);
-	free(second);
+	if (first != NULL)
+	{
+		free(first);
+		first = NULL;
+	}
+	if (second != NULL)
+	{
+		free(second);
+		second = NULL;
+	}
 	if (!merged)
 	{
 		perror("malloc");

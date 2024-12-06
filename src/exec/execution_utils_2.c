@@ -3,34 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   execution_utils_2.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 04:19:01 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/25 01:21:43 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/12/07 02:28:11 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/minishell.h"
 
-void	handle_sigint(int sig)
+void	handle_sigint_newline(int sig)
 {
-	(void) sig;
-	if (g_pid == -1 || g_pid == -50)
-	{
-		write(1, "\n", 2);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-		g_pid = -50;
-	}
-	else if (g_pid == -5)
-	{
-		write(1, "\n", 1);
-		close(0);
-		g_pid = -10;
-	}
-	else if (g_pid > 0)
-		kill(g_pid, SIGINT);
+	g_sig = sig;
+	write(1, "\n", 2);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void	handle_sigint_heredoc(int sig)
+{
+	g_sig = sig;
+	write(1, "\n", 1);
+	close(0);
 }
 
 void	check_status(t_data *data, int status)
@@ -46,7 +41,7 @@ void	check_status(t_data *data, int status)
 		if (data->exit_status == 131)
 			write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
 		else if (data->exit_status == 130)
-			write(STDOUT_FILENO, "\n", 1);
+			write(STDOUT_FILENO, "\n", 2);
 	}
 	else
 		data->exit_status = 1;
@@ -60,9 +55,19 @@ void	wait_processes(t_data *data)
 	pid = waitpid(-1, &status, 0);
 	while (pid > 0)
 	{
+		if (g_sig == 3)
+		{
+			g_sig = 0;
+			kill(pid, SIGQUIT);
+		}
+		if (g_sig == 2)
+		{
+			g_sig = 0;
+			kill(pid, SIGINT);
+		}
 		if (pid == data->prev_pipe)
 			check_status(data, status);
 		pid = waitpid(-1, &status, 0);
 	}
-	g_pid = -1;
+	handle_signals();
 }

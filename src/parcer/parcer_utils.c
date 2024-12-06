@@ -6,7 +6,7 @@
 /*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:04:11 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/26 00:51:17 by artemii          ###   ########.fr       */
+/*   Updated: 2024/12/07 02:26:03 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,23 +15,20 @@
 char	*handle_variable(const char *str, int *i, t_data *data, char *result)
 {
 	int		start;
-	char	*var;
 	char	*expanded;
 
 	start = *i;
-	var = NULL;
-	expanded = NULL;
 	(*i)++;
-	if (str[(*i)++] == '?')
+	if (str[*i] == '\0' || str[*i] == ' ')
+		expanded = ft_strdup("$");
+	else if (str[*i] == '$')
+		return (expanded = handle_variable(str, i, data, result));
+	else if (str[*i] == '\'' || str[*i] == '"')
+		return (expanded = handle_quotes(str, i, data, result));
+	else if (str[(*i)++] == '?')
 		expanded = ft_itoa(data->exit_status);
 	else
-	{
-		while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
-			(*i)++;
-		var = ft_strndup(str + start, *i - start);
-		expanded = replace_env_var(var, data);
-		free(var);
-	}
+		expanded = extract_and_expand_variable(str, i, start, data);
 	if (result == NULL)
 		result = expanded;
 	else

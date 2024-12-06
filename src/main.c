@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/05 16:16:35 by azakharo          #+#    #+#             */
-/*   Updated: 2024/12/01 17:47:31 by artemii          ###   ########.fr       */
+/*   Updated: 2024/12/01 11:11:19 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/minishell.h"
 
-int			g_pid;
+int			g_sig;
 
 void		print_commands(t_data *data);
 
@@ -90,7 +90,7 @@ int	main(int argc, char **argv, char **envp)
 		data->user_input = readline("minishell$ ");
 		process_user_input(data, &exit_status);
 		reset_data_flags(data);
-		handle_pid_status(data, &exit_status);
+		handle_sigint_status(data, &exit_status);
 		parse_and_execute(data, &exit_status);
 	}
 	return (0);
@@ -106,9 +106,8 @@ void	print_commands(t_data *data)
 	{
 		ft_printf("Command[%d]:\n", i);
 		if (data->cmd[i]->cmd)
-			ft_printf("  cmd: %s\n", data->cmd[i]->cmd);
-		else
-			ft_printf("  cmd: (null)\n");
+			ft_printf("  cmd: %s\n",
+				data->cmd[i]->cmd ? data->cmd[i]->cmd : "(null)");
 		if (data->cmd[i]->cmd_arg)
 		{
 			j = 0;
@@ -120,11 +119,6 @@ void	print_commands(t_data *data)
 		}
 		else
 			ft_printf("  cmd_arg: (null)\n");
-		// Print positions
-		ft_printf("  pos_input: %d\n", data->cmd[i]->pos_input);
-		ft_printf("  pos_output: %d\n", data->cmd[i]->pos_output);
-		ft_printf("  pos_append: %d\n", data->cmd[i]->pos_append);
-		ft_printf("  pos_here_doc: %d\n", data->cmd[i]->pos_here_doc);
 		// Final input, output, append, and here_doc files
 		if (data->cmd[i]->input_file)
 			ft_printf("  final_input: %s\n", data->cmd[i]->input_file);

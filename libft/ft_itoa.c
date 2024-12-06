@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: azakharo <azakharo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 21:09:09 by azakharo          #+#    #+#             */
-/*   Updated: 2024/12/01 14:40:21 by azakharo         ###   ########.fr       */
+/*   Updated: 2024/12/01 15:39:03 by mmychaly         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,9 @@ static int	length(long nb)
 
 char	*handle_zero(void)
 {
-	char *str = malloc(2 * sizeof(char));
+	char	*str;
+
+	str = malloc(2 * sizeof(char));
 	if (!str)
 		return (NULL);
 	str[0] = '0';
