@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 15:23:52 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/12/01 15:39:53 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/12/07 02:26:21 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -213,4 +213,7 @@ void		handle_before_token(t_cmd *cmd, char *before);
 void		update_redirection(char **target_file, char ***file_array,
 				char *token);
 void		handle_redir_token(t_cmd *cmd, char *after, char *redir);
+
+char		*extract_and_expand_variable(const char *str, int *i, int start,
+				t_data *data);
 #endif

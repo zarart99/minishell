@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execution_utils_2.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/22 04:19:01 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/12/01 15:15:25 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/12/07 02:28:11 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	wait_processes(t_data *data)
 
 	pid = waitpid(-1, &status, 0);
 	while (pid > 0)
-	{	
+	{
 		if (g_sig == 3)
 		{
 			g_sig = 0;
