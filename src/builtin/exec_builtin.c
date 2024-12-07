@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_builtin.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/06 04:50:13 by mmychaly          #+#    #+#             */
-/*   Updated: 2024/11/25 01:48:08 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/12/07 15:45:51 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void	check_builtin_command(t_data *data)
 
 void	redirection_builtin_command(t_data *data)
 {
+	check_path(data);
 	if (data->cmd[data->i]->pos_here_doc > data->cmd[data->i]->pos_input)
 	{
 		ft_redirection_here_doc(data);

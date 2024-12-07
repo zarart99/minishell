@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirections.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 00:47:25 by artemii           #+#    #+#             */
-/*   Updated: 2024/11/25 01:24:17 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/12/07 15:43:04 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,18 +59,21 @@ void	ft_redirection_pipe(t_data *data)
 {
 	if (data->i != data->nb_pipe)
 		close(data->pipefd[0]);
-	if (dup2(data->prev_pipe, STDIN_FILENO) == -1)
+	if (dup2(data->cmd[data->i - 1]->prev_pipe, STDIN_FILENO) == -1)
 	{
 		perror("Error: dup2 prev_pipe");
-		free_pipe(data->prev_pipe);
-		close(data->prev_pipe);
+		free_pipe(data->cmd[data->i - 1]->prev_pipe);
+		close(data->cmd[data->i - 1]->prev_pipe);
+		data->cmd[data->i - 1]->prev_pipe = 0;
+		close_other_fd(data);
+		close_prev_pipes_in_child(data);
 		if (data->i != data->nb_pipe)
 			close(data->pipefd[1]);
 		free_all_data(data);
 		rl_clear_history();
 		exit (EXIT_FAILURE);
 	}
-	close(data->prev_pipe);
+	close(data->cmd[data->i - 1]->prev_pipe);
 	data->flag_pipe = 1;
 }
 
@@ -107,6 +110,8 @@ void	ft_redirection_out_pipe(t_data *data)
 		if (data->flag_pipe > 0)
 			free_pipe(0);
 		close(data->pipefd[1]);
+		close_other_fd(data);
+		close_prev_pipes_in_child(data);
 		free_all_data(data);
 		rl_clear_history();
 		exit (EXIT_FAILURE);
