@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: azakharo <azakharo@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 00:47:05 by artemii           #+#    #+#             */
-/*   Updated: 2024/12/01 14:25:57 by azakharo         ###   ########.fr       */
+/*   Updated: 2024/12/07 15:42:20 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,7 @@ void	process_tokens(t_cmd *cmd, char **tokens)
 	cmd->rd_idx = 1;
 	while (tokens[i] != NULL)
 	{
-		if (ft_strchr(tokens[i], ' ') != NULL)
-			handle_command_args(cmd, tokens, &i);
-		else if (ft_strchr(tokens[i], '<') != NULL || ft_strchr(tokens[i],
+		if (ft_strchr(tokens[i], '<') != NULL || ft_strchr(tokens[i],
 				'>') != NULL)
 			process_redirection_token(cmd, tokens[i], &i, tokens);
 		else

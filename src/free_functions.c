@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free_functions.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mmychaly <mmychaly@student.42.fr>          +#+  +:+       +#+        */
+/*   By: artemii <artemii@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 01:01:36 by artemii           #+#    #+#             */
-/*   Updated: 2024/12/04 01:39:55 by mmychaly         ###   ########.fr       */
+/*   Updated: 2024/12/07 15:46:24 by artemii          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,18 +25,6 @@ void	free_split(char **args)
 		i++;
 	}
 	free(args);
-}
-
-void	free_cmd_files(t_cmd *cmd)
-{
-	if (cmd->input_files)
-		free_split(cmd->input_files);
-	if (cmd->output_files)
-		free_split(cmd->output_files);
-	if (cmd->append_files)
-		free_split(cmd->append_files);
-	if (cmd->here_doc_files)
-		free_split(cmd->here_doc_files);
 }
 
 void	free_cmd_resources(t_cmd *cmd)
@@ -96,3 +84,29 @@ void	free_all_data(t_data *data)
 		free(data);
 	}
 }
+
+char	*extract_and_expand_variable(const char *str, int *i, int start,
+		t_data *data)
+{
+	char	*var;
+	char	*expanded;
+
+	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
+		(*i)++;
+	var = ft_strndup(str + start, *i - start);
+	expanded = replace_env_var(var, data);
+	free(var);
+	return (expanded);
+}
+
+/*void	free_cmd_files(t_cmd *cmd)
+{
+	if (cmd->input_files)
+		free_split(cmd->input_files);
+	if (cmd->output_files)
+		free_split(cmd->output_files);
+	if (cmd->append_files)
+		free_split(cmd->append_files);
+	if (cmd->here_doc_files)
+		free_split(cmd->here_doc_files);
+}*/
